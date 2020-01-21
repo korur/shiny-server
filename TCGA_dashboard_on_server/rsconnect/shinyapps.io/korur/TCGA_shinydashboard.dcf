@@ -1,0 +1,12 @@
+name: TCGA_shinydashboard
+title: TCGA_shinydashboard
+username:
+account: korur
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1675421
+bundleId: 2739659
+url: https://korur.shinyapps.io/TCGA_shinydashboard/
+when: 1579457006.05637
+asMultiple: FALSE
+asStatic: FALSE
