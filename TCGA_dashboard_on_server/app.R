@@ -11,7 +11,7 @@ data$study = as.factor(data$study)
 # Shiny dashboard App
 
 header <- dashboardHeader(
-    title= "TCGA DATA Analysis", windowTitle = "TCGA Shiny dashboard",
+    title= "TCGA DATA Analysis",
     dropdownMenu(type = "notifications", 
                  notificationItem(
                      text = "Build by Serdar Korur | www.dataatomic.com", 
