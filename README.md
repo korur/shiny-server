@@ -1,2 +1,2 @@
 # shiny-server
-Repository for the code for Shiny / Shinydashboard based Web Apps
+Repository for my Shiny / Shinydashboard based Web Apps
