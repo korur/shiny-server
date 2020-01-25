@@ -1,0 +1,12 @@
+name: CoronaOutbreak
+title: CoronaOutbreak
+username:
+account: korur
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1702985
+bundleId: 2752607
+url: https://korur.shinyapps.io/CoronaOutbreak/
+when: 1579944814.8517
+asMultiple: FALSE
+asStatic: FALSE
