@@ -39,7 +39,7 @@ header <- dashboardHeader(
     dropdownMenu(type = "notifications", 
                  
                  notificationItem(
-                     text = "Data: Johns Hopkins University",
+                     text = "Data: JHU,WHO, CDC, NHC, Dingxiangyuan",
                      icon = shiny::icon("database"),
                      status = "success"),
                  
@@ -145,7 +145,7 @@ fluidRow(
     width = "4"
     ,solidHeader = TRUE 
     ,collapsible = TRUE 
-    ,plotOutput("countries", width = "700px", height = "700px") 
+    ,plotOutput("countries", width = "500px", height = "700px") 
   ) #box 
   
 ),  # fluidrow
@@ -236,14 +236,14 @@ server <- function(input, output) {
     })
     
     output$death <- renderValueBox({
-      valueBox( print(56)
+      valueBox( print(80)
                
                 , "Total Deaths"
                 ,icon = icon("cross")
                 ,color = "red")  
     })
     output$rate <- renderValueBox({
-      valueBox( round(56/sum(data$confirmed) *100,1)
+      valueBox( round(80/sum(data$confirmed) *100,1)
                
                , "Death rate"
                ,icon = icon('percent')
@@ -345,8 +345,8 @@ server <- function(input, output) {
       dfm <- df_merge[,c(1,3,4)]
       
       
-      dfm %>% mutate(`Province/State`=fct_reorder(`Province/State`,Confirmed, .desc=TRUE))  %>% 
-        ggplot(aes(x=`Last Update`, y=Confirmed))+facet_wrap(.~`Province/State`, scales = "free_y") + 
+      dfm %>% filter(Confirmed >1) %>% mutate(`Province/State`=fct_reorder(`Province/State`,Confirmed, .desc=TRUE))  %>% 
+        ggplot(aes(x=`Last Update`, y=Confirmed))+facet_wrap(.~`Province/State`, scales = "free_y", nrow=10) + 
         geom_line(color='red') + 
         geom_point(color='red',size=2) +
         theme_minimal() + 
