@@ -17,7 +17,7 @@ library(DT)
 
 ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam")
 US <- "US"
-EU <- c("France", "UK", "United Kingdom")
+EU <- c("France", "UK", "United Kingdom", "Germany")
 
 
 # Shiny dashboard App
@@ -236,14 +236,14 @@ server <- function(input, output) {
     })
     
     output$death <- renderValueBox({
-      valueBox( print(80)
+      valueBox( print(107)
                
                 , "Total Deaths"
                 ,icon = icon("cross")
                 ,color = "red")  
     })
     output$rate <- renderValueBox({
-      valueBox( round(80/sum(data$confirmed) *100,1)
+      valueBox( round(107/sum(data$confirmed) *100,1)
                
                , "Death rate"
                ,icon = icon('percent')
