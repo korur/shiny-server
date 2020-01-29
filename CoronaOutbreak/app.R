@@ -236,14 +236,14 @@ server <- function(input, output) {
     })
     
     output$death <- renderValueBox({
-      valueBox( print(107)
+      valueBox( print(132)
                
                 , "Total Deaths"
                 ,icon = icon("cross")
                 ,color = "red")  
     })
     output$rate <- renderValueBox({
-      valueBox( round(107/sum(data$confirmed) *100,1)
+      valueBox( round(132/sum(data$confirmed) *100,1)
                
                , "Death rate"
                ,icon = icon('percent')
@@ -282,7 +282,7 @@ server <- function(input, output) {
     
     output$countries <- renderPlot({
         # Plot
-       df_sum <-  data %>% group_by(country) %>% summarise(n=sum(confirmed)) %>% arrange(-n)
+       df_sum <-  data %>% filter(country != "Mainland China") %>% group_by(country) %>% summarise(n=sum(confirmed)) %>% arrange(-n)
          df_sum =df_sum  %>% mutate(country=fct_reorder(country, n, .desc=TRUE))
        df_sum %>% ggplot(aes(x=country,y=n, fill =n )) + 
             geom_col() + 
@@ -292,7 +292,7 @@ server <- function(input, output) {
                 caption= "www.dataatomic.com",
                 x = "", 
                 y = "Number of cases",
-                title = "Confirmed Coronavirus Cases per Country") + 
+                title = "Cases Outside China") + 
             coord_flip()
         
     })
