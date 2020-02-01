@@ -17,7 +17,7 @@ library(DT)
 
 ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam")
 America <- c("US", "Canada")
-EU <- c("France", "UK", "United Kingdom", "Germany", "Italy", "Finland")
+EU <- c("France", "UK", "Germany", "Italy", "Finland", "Sweden", "Spain" )
 
 
 # Shiny dashboard App
