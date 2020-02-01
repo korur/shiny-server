@@ -16,8 +16,8 @@ library(leaflet)
 library(DT)
 
 ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam")
-US <- "US"
-EU <- c("France", "UK", "United Kingdom", "Germany")
+America <- c("US", "Canada")
+EU <- c("France", "UK", "United Kingdom", "Germany", "Italy", "Finland")
 
 
 # Shiny dashboard App
@@ -35,16 +35,11 @@ df_merge <- readRDS("df_merge.rds")
 
 
 header <- dashboardHeader(
-    title= "Coronavirus Cases",
+    title= "Coronavirus Outbreak",
     dropdownMenu(type = "notifications", 
                  
                  notificationItem(
-                     text = "Data: JHU,WHO, CDC, NHC, Dingxiangyuan",
-                     icon = shiny::icon("database"),
-                     status = "success"),
-                 
-                 notificationItem(
-                         text = "Created by Serdar Korur | www.dataatomic.com", 
+                         text = "Created by www.dataatomic.com", 
                          icon = shiny::icon("atom"),
                          status = "success",
                          href = "https://www.dataatomic.com"))
@@ -59,13 +54,33 @@ header <- dashboardHeader(
 sidebar <- dashboardSidebar(
     
     sidebarMenu(
-      
-        menuItem("My Website",  icon =icon("paper-plane"),
+      menuItem("Dashboard", icon = icon("dashboard"),
+               tabName = "dashboard"
+      ) ,
+      menuItem("Cases Outside China", icon =icon("globe-americas"),
+               tabName = "countries"
+      ),
+      menuItem("Simulations", icon = icon("chart-line"),
+               tabName = "prediction"
+      ),
+      menuItem("Raw Data", icon = icon("table"),
+               tabName = "rawdata"
+      ),
+      menuItem("Data Sources",  icon =icon("database"),
+               tabName = "Sources",
+               menuSubItem(text= "WHO", href = "https://www.who.int/emergencies/diseases/novel-coronavirus-2019/situation-reports"),
+               menuSubItem(text= "CDC", href = "https://www.cdc.gov/coronavirus/2019-ncov/index.html"),
+               menuSubItem(text= "NHCPRC", href = "http://www.nhc.gov.cn/yjb/s3578/new_list.shtml"),
+               menuSubItem(text= "DXC", href = "https://3g.dxy.cn/newh5/view/pneumonia?scene=2&clicktime=1579582238&enterid=1579582238&from=singlemessage&isappinstalled=0"),
+               menuSubItem(text= "ECDC", href = "https://www.ecdc.europa.eu/en/geographical-distribution-2019-ncov-cases"),
+              menuSubItem(text= "JHU", href = "https://docs.google.com/spreadsheets/d/1yZv9w9zRKwrGTaR-YzmAqMefw4wMlaXocejdxZaTs6w/htmlview?usp=sharing&sle=true")),
+               
+     menuItem("Contact Us",  icon =icon("paper-plane"),
                  tabName = "My Website",
-                 menuSubItem(text= "Dataatomic", href = "http://www.dataatomic.com"),
-                 menuSubItem(text= "Medium", href = "https://medium.com/@serdarkorur"),
-                 menuSubItem(text= "Linkedin", href = "https://www.linkedin.com/in/serdar-korur/"),
-                 menuSubItem(text= "Github", href = "https://github.com/korur")
+                 menuSubItem(text= "Email", icon = shiny::icon("envelope-open-text"), href = "mailto:serdar.korur@gmail.com"),
+                 menuSubItem(text= "Dataatomic", icon = icon("atom"), href = "http://www.dataatomic.com"),
+                 menuSubItem(text= "Linkedin", icon = icon("linkedin"), href = "https://www.linkedin.com/in/serdar-korur/")
+
         )
     )
 )
@@ -85,6 +100,8 @@ body <- dashboardBody(
 #######        TOP ROW      #######
 ###################################
 
+tabItems(
+  tabItem("dashboard",
 
     fluidRow(
                     valueBoxOutput("numcases", width = 2)
@@ -113,54 +130,56 @@ fluidRow(
 
 fluidRow( 
   box(
-    width = "6"
+    width = "12"
     ,solidHeader = TRUE 
     ,collapsible = TRUE 
-    ,leafletOutput("map", width = "900px", height = "700px") 
+    ,leafletOutput("map", height = "700px") 
   ),
   box(
-    width = "4"
+    width = "12"
     ,solidHeader = TRUE 
     ,collapsible = TRUE 
-    ,plotOutput("casetimeline", width = "700px", height = "700px") 
+    ,plotOutput("casetimeline", height = "700px") 
   ) #box 
     
-       ), #fluidrow
-
+       ) #fluidrow
+), # tabItem dashboard
 
 ################################### 
 #######        BOXES 2      #######
 ###################################
+tabItem("rawdata",
 
-fluidRow( 
+  box(
+    width = "12"
+    ,solidHeader = TRUE 
+    ,collapsible = TRUE 
+    ,column(width=12, DT::dataTableOutput("df_wide"), 
+    style = "height:500px; overflow-y: scroll;overflow-x: scroll;") 
+  ), downloadButton("downloadCsv", "Download as CSV") #box
+), #rawdata,
+
+tabItem("countries",
   
-  box(
-    width = "6"
-    ,solidHeader = TRUE 
+        box(width = "12",
+    solidHeader = TRUE 
     ,collapsible = TRUE 
-    ,DT::dataTableOutput("df_wide") 
-    
-  ),
-  box(
-    width = "4"
-    ,solidHeader = TRUE 
-    ,collapsible = TRUE 
-    ,plotOutput("countries", width = "500px", height = "700px") 
+    ,plotOutput("countries") 
   ) #box 
   
-),  # fluidrow
-fluidRow( 
-  
-  box(
-    width = "10"
-    ,solidHeader = TRUE 
-    ,collapsible = TRUE 
-    ,plotOutput("facet", width = "1600px", height = "1200px") 
-    
-  ) #box 
-  
-)  # fluidrow
-                    ) # end of dashboardbody
+),
+tabItem("prediction",
+        box(
+          width = "12"
+          ,solidHeader = TRUE 
+          ,collapsible = TRUE 
+          ,verbatimTextOutput("prediction") , imageOutput("wflow", width = "100%")
+        ) #box 
+        
+) # tabItem
+)# fluidrow
+) # tabItems
+
                
 ###################################
 ################################### 
@@ -198,78 +217,73 @@ server <- function(input, output) {
   
     #creating the valueBoxOutput content
     output$numcases <- renderValueBox({
-        valueBox( sum(data$confirmed)
-         , "Total Number of Cases"
+        valueBox( value = tags$p( sum(data$confirmed), style = "font-size: 70%;"),
+                  subtitle = tags$p("Total Cases", style = "font-size: 100%;") 
             ,icon = icon("procedures")
             ,color = "red")  
     })
     output$numchina <- renderValueBox({
-        valueBox(data %>% filter(country == "Mainland China") %>% summarise(n=sum(confirmed))
-           
-            , "CHINA"
+        valueBox(
+          value = tags$p( data %>% filter(country == "Mainland China") %>% summarise(n=sum(confirmed)), style = "font-size: 70%;"),
+          subtitle = tags$p("China", style = "font-size: 100%;")
             ,icon = icon('procedures')
             ,color = "red")  
     })
     output$numeu <- renderValueBox({
         valueBox(
-            data %>% filter(country %in% EU) %>% summarise(n=sum(confirmed))
+          value = tags$p( data %>% filter(country %in% EU) %>% summarise(n=sum(confirmed)), style = "font-size: 70%;"),
+          subtitle = tags$p("Europe", style = "font-size: 100%;")
             
-            , "Europe"
             ,icon = icon("procedures")
             ,color = "red")  
     })
     
     output$numus <- renderValueBox({
         valueBox( 
-            data %>% filter(country %in% US) %>% summarise(n=sum(confirmed))
-            , "US"
+          value = tags$p(data %>% filter(country %in% America) %>% summarise(n=sum(confirmed)), style = "font-size: 70%;"),
+          subtitle = tags$p("AMERICA", style = "font-size: 100%;")
+            , "AMERICA"
             ,icon = icon("procedures")
             ,color = "red")  
     })
     output$update <- renderValueBox({
         valueBox( 
-            data %>% attr("update")
-            , "Last updated"
+          value = tags$p(print("Last Updated"), style = "font-size: 70%;"),
+          subtitle = tags$p(data %>% attr("update"), style = "font-size: 100%;")
             ,icon = icon("hourglass-start")
             ,color = "blue") 
         
     })
     
     output$death <- renderValueBox({
-      valueBox( print(132)
-               
-                , "Total Deaths"
+      valueBox(value = tags$p(print(sum(data$deaths)), style = "font-size: 70%;"),
+      subtitle = tags$p("Total Deaths", style = "font-size: 100%;")
                 ,icon = icon("cross")
                 ,color = "red")  
     })
     output$rate <- renderValueBox({
-      valueBox( round(132/sum(data$confirmed) *100,1)
-               
-               , "Death rate"
+      valueBox( value = tags$p( round(sum(data$deaths)/sum(data$confirmed) *100,1), style = "font-size: 70%;"),
+                subtitle = tags$p("Death rate", style = "font-size: 100%;")
                ,icon = icon('percent')
                ,color = "red")  
     })
     output$count <- renderValueBox({
-      valueBox(
-        data2 %>% distinct(country) %>% count()
-        
-        , "Countries"
+      valueBox(value = tags$p( data2 %>% distinct(country) %>% count(), style = "font-size: 70%;"),
+               subtitle = tags$p("Countries", style = "font-size: 100%;")
         ,icon = icon("flag")
         ,color = "red")  
     })
     
     output$continents <- renderValueBox({
-      valueBox( 
-        print(4)
-        , "Continents"
+      valueBox( value = tags$p( print("4"), style = "font-size: 70%;"),
+                subtitle = tags$p("Continents", style = "font-size: 100%;")
         ,icon = icon("globe-asia")
         ,color = "red")  
     })
     output$up <- renderValueBox({
-      valueBox( 
-        print("Coronavirus Outbreak")
-        , "Wuhan Coronavirus 2019-nCoV"
-        ,icon = icon("users")
+      valueBox( value = tags$p( print("Outbreak"), style = "font-size: 70%;"),
+                subtitle = tags$p("2019-nCoV", style = "font-size: 100%;")
+                ,icon = icon("procedures")
         ,color = "blue") 
       
     })
@@ -298,15 +312,21 @@ server <- function(input, output) {
     })
     
     output$map <- renderLeaflet({
-      m <- leaflet() %>%
+     
+      
+      m <- leaflet(data2) %>%
         addTiles(
           urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
           attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>% 
         addProviderTiles(providers$Stamen.TonerLite) %>% 
-        addCircleMarkers(lng=data2$lon, lat=data2$lat, radius = 2* data2$radius, color = "red") %>% 
+        addCircleMarkers(lng=data2$lon, lat=data2$lat, radius = 3* data2$radius, color = "green") %>% 
+        addAwesomeMarkers(~lon, ~lat,  label=~confirmed) %>% 
         setView(lng = 125, lat = 25, zoom = 4)
     })
     
+    output$prediction <- renderText({
+    "Coming Soon"
+    })
     ###################################
     #######                     #######
     #######     PLOT BOXES 1    #######
@@ -322,19 +342,17 @@ server <- function(input, output) {
       summary %>% ggplot(aes(x=`Last Update`, y=n)) +
         geom_line(size=2,color='red') + 
         geom_point(size=8, color='red')+theme_minimal() +
-        theme(legend.position = "none",text = element_text(size=20), plot.title = element_text( hjust=0.5, vjust = -1)) + 
+        theme(legend.position = "none", axis.title.x = element_blank(), text = element_text(size=20), plot.title = element_text( hjust=0.5, vjust = -1)) + 
         labs(
           caption= "   www.dataatomic.com",
-          x = "Date", 
           y = "Number of infected people",
-          title = "Global Coronavirus Cases are increasing")
+          title = "Global Cases")
       
     }) 
     
     output$df_wide <- renderDataTable({
       
-      dfm <- df_merge[,c(1,3,4)]
-      df_wide <- dfm %>% spread(`Last Update`, Confirmed)
+      df_wide <- df_merge[, c(2,3,4)] %>% group_by( `Country/Region`, `Last Update`) %>% summarise(Confirmed = sum(Confirmed)) %>% spread(`Last Update`, Confirmed)
       df_wide[is.na(df_wide)] <- 0
    datatable(df_wide, options = list(paging = TRUE), height='400px') 
       
@@ -358,6 +376,17 @@ server <- function(input, output) {
         title = "Regional increases of Coronavirus Cases with Time")
       
     }) 
+    output$wflow <- renderImage({
+      return(list(src = "ai2.jpg",contentType = "image/png",alt = "Alignment"))
+    }, deleteFile = FALSE)
+    
+    output$downloadCsv <- downloadHandler(
+      filename = "coronavirusdata.csv",
+      content = function(file) {
+        write.csv(df_wide, file)
+      },
+      contentType = "text/csv"
+    )
 }
 shinyApp(ui = ui, server = server)
 
