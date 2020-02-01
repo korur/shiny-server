@@ -15,9 +15,10 @@ library(tidyverse)
 library(leaflet)
 library(DT)
 
-ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam")
+ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
+          "Philippines", "Hong Kong", "Malaysia", "Macau", "Tibet")
 America <- c("US", "Canada")
-EU <- c("France", "UK", "Germany", "Italy", "Finland", "Sweden", "Spain" )
+EU <- c("France", "UK", "Germany", "Italy", "Finland", "Sweden", "Spain" , "Norway")
 
 
 # Shiny dashboard App
@@ -117,9 +118,9 @@ tabItems(
 
 fluidRow(
   valueBoxOutput("death", width = 2)
+  ,valueBoxOutput("recovered", width = 2)
   ,valueBoxOutput("rate", width = 2)
   ,valueBoxOutput("count", width = 2)
-  ,valueBoxOutput("continents", width = 2)
   ,valueBoxOutput("update", width = 3)
 ),
 
@@ -274,11 +275,11 @@ server <- function(input, output) {
         ,color = "red")  
     })
     
-    output$continents <- renderValueBox({
-      valueBox( value = tags$p( print("4"), style = "font-size: 70%;"),
-                subtitle = tags$p("Continents", style = "font-size: 100%;")
-        ,icon = icon("globe-asia")
-        ,color = "red")  
+    output$recovered<- renderValueBox({
+      valueBox( value = tags$p( print("287"), style = "font-size: 70%;"),
+                subtitle = tags$p("recovered", style = "font-size: 100%;")
+        ,icon = icon("check-circle")
+        ,color = "green")  
     })
     output$up <- renderValueBox({
       valueBox( value = tags$p( print("Outbreak"), style = "font-size: 70%;"),
@@ -298,7 +299,7 @@ server <- function(input, output) {
         # Plot
        df_sum <-  data %>% filter(country != "Mainland China") %>% group_by(country) %>% summarise(n=sum(confirmed)) %>% arrange(-n)
          df_sum =df_sum  %>% mutate(country=fct_reorder(country, n, .desc=TRUE))
-       df_sum %>% ggplot(aes(x=country,y=n, fill =n )) + 
+       df_sum %>% ggplot(aes(x=country,y=n, fill =n, height = 1200 )) + 
             geom_col() + 
             theme_minimal() + 
             theme(legend.position = "none",text = element_text(size=20), plot.title = element_text( hjust=0.5, vjust = -1)) +
