@@ -276,7 +276,7 @@ server <- function(input, output) {
     })
     
     output$recovered<- renderValueBox({
-      valueBox( value = tags$p( print("287"), style = "font-size: 70%;"),
+      valueBox( value = tags$p( print("340"), style = "font-size: 70%;"),
                 subtitle = tags$p("Recovered", style = "font-size: 100%;")
         ,icon = icon("check-circle")
         ,color = "green")  
@@ -321,7 +321,14 @@ server <- function(input, output) {
           attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>% 
         addProviderTiles(providers$Stamen.TonerLite) %>% 
         addCircleMarkers(lng=data2$lon, lat=data2$lat, radius = 3* data2$radius, color = "green") %>% 
-        addAwesomeMarkers(~lon, ~lat,  label=~confirmed) %>% 
+        addAwesomeMarkers(~lon, ~lat,  label=~confirmed, 
+                    labelOptions = labelOptions(noHide = F, direction = "bottom",
+                                               style = list(
+                                                     "color" = "black",
+                                                    "box-shadow" = "3px 3px rgba(0,0,0,0.25)",
+                                                   "font-size" = "15px",
+                                                 "border-color" = "rgba(0,0,0,0.5)"
+    ))) %>% 
         setView(lng = 125, lat = 25, zoom = 4)
     })
     
