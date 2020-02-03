@@ -276,7 +276,7 @@ server <- function(input, output) {
     })
     
     output$recovered<- renderValueBox({
-      valueBox( value = tags$p( print("340"), style = "font-size: 70%;"),
+      valueBox( value = tags$p( print("487"), style = "font-size: 70%;"),
                 subtitle = tags$p("Recovered", style = "font-size: 100%;")
         ,icon = icon("check-circle")
         ,color = "green")  
