@@ -18,7 +18,8 @@ library(DT)
 ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
           "Philippines", "Hong Kong", "Malaysia", "Macau", "Tibet")
 America <- c("US", "Canada")
-EU <- c("France", "UK", "Germany", "Italy", "Finland", "Sweden", "Spain" , "Norway")
+EU <- c("France", "UK", "Germany", "Italy", 
+        "Finland", "Sweden", "Spain" , "Norway")
 
 
 # Shiny dashboard App
@@ -43,7 +44,9 @@ header <- dashboardHeader(
                          text = "Created by www.dataatomic.com", 
                          icon = shiny::icon("atom"),
                          status = "success",
-                         href = "https://www.dataatomic.com"))
+                         href = "https://www.dataatomic.com")
+                 
+                 )
 )
 
 ###################################
@@ -61,10 +64,11 @@ sidebar <- dashboardSidebar(
       menuItem("Cases Outside China", icon =icon("globe-americas"),
                tabName = "countries"
       ),
+     
       menuItem("Simulations", icon = icon("chart-line"),
                tabName = "prediction"
       ),
-      menuItem("Raw Data", icon = icon("table"),
+      menuItem("Download Data", icon = icon("table"),
                tabName = "rawdata"
       ),
       menuItem("Data Sources",  icon =icon("database"),
@@ -133,7 +137,7 @@ fluidRow(
   box(
     width = "12"
     ,solidHeader = TRUE 
-    ,collapsible = TRUE 
+    ,collapsible = TRUE
     ,leafletOutput("map", height = "700px") 
   ),
   box(
@@ -160,12 +164,13 @@ tabItem("rawdata",
   ), downloadButton("downloadCsv", "Download as CSV") #box
 ), #rawdata,
 
+
 tabItem("countries",
   
-        box(width = "12",
+        box(width = "12", height = "800px",
     solidHeader = TRUE 
     ,collapsible = TRUE 
-    ,plotOutput("countries") 
+    ,plotOutput("countries", height = '700px') 
   ) #box 
   
 ),
@@ -276,7 +281,7 @@ server <- function(input, output) {
     })
     
     output$recovered<- renderValueBox({
-      valueBox( value = tags$p( print("487"), style = "font-size: 70%;"),
+      valueBox( value = tags$p( print("680"), style = "font-size: 70%;"),
                 subtitle = tags$p("Recovered", style = "font-size: 100%;")
         ,icon = icon("check-circle")
         ,color = "green")  
@@ -289,6 +294,7 @@ server <- function(input, output) {
       
     })
     
+      
     ###################################
     #######                     #######
     #######     PLOT BOXES 1    #######
@@ -299,7 +305,7 @@ server <- function(input, output) {
         # Plot
        df_sum <-  data %>% filter(country != "Mainland China") %>% group_by(country) %>% summarise(n=sum(confirmed)) %>% arrange(-n)
          df_sum =df_sum  %>% mutate(country=fct_reorder(country, n, .desc=TRUE))
-       df_sum %>% ggplot(aes(x=country,y=n, fill =n, height = 1200 )) + 
+       df_sum %>% ggplot(aes(x=country,y=n, fill =n, height = "200%" )) + 
             geom_col() + 
             theme_minimal() + 
             theme(legend.position = "none",text = element_text(size=20), plot.title = element_text( hjust=0.5, vjust = -1)) +
@@ -320,15 +326,8 @@ server <- function(input, output) {
           urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
           attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>% 
         addProviderTiles(providers$Stamen.TonerLite) %>% 
-        addCircleMarkers(lng=data2$lon, lat=data2$lat, radius = 3* data2$radius, color = "green") %>% 
-        addAwesomeMarkers(~lon, ~lat,  label=~confirmed, 
-                    labelOptions = labelOptions(noHide = F, direction = "bottom",
-                                               style = list(
-                                                     "color" = "black",
-                                                    "box-shadow" = "3px 3px rgba(0,0,0,0.25)",
-                                                   "font-size" = "15px",
-                                                 "border-color" = "rgba(0,0,0,0.5)"
-    ))) %>% 
+        addCircleMarkers(lng=data2$lon, lat=data2$lat, radius = 3* data2$radius, color = "red") %>% 
+        addMarkers(data2$lon, data2$lat,  popup =   paste("<h4>", data2$area, "<br>", data2$confirmed, "case/s","</h4>"))%>% 
         setView(lng = 125, lat = 25, zoom = 4)
     })
     
