@@ -14,7 +14,7 @@ library(shinydashboard)
 library(tidyverse)
 library(leaflet)
 library(DT)
-library(countup)
+
 
 ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
           "Philippines", "Hong Kong", "Malaysia", "Macau", "Tibet")
