@@ -5,8 +5,8 @@ account: korur
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1702985
-bundleId: 2776090
+bundleId: 2776105
 url: https://korur.shinyapps.io/CoronaOutbreak/
-when: 1580891839.31413
+when: 1580892462.13365
 asMultiple: FALSE
 asStatic: FALSE

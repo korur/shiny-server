@@ -257,7 +257,7 @@ server <- function(input, output) {
     output$update <- renderValueBox({
         valueBox( 
           value = tags$p(print("Last Updated"), style = "font-size: 70%;"),
-          subtitle = tags$p(data %>% attr("update"), style = "font-size: 100%;")
+          subtitle = tags$p("Feb 5, 2020 9 am UTC", style = "font-size: 100%;")
             ,icon = icon("hourglass-start")
             ,color = "blue") 
         
