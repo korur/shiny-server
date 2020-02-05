@@ -20,13 +20,12 @@ ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South K
           "Philippines", "Hong Kong", "Malaysia", "Macau", "Tibet")
 America <- c("US", "Canada")
 EU <- c("France", "UK", "Germany", "Italy", 
-        "Finland", "Sweden", "Spain" , "Norway")
+        "Finland", "Sweden", "Spain" , "Norway", "Belgium")
 
 
 # Shiny dashboard App
 data <- readRDS("c_df1.rds")
 data2 <- readRDS("map.rds")
-value <- attr(data,'update')
 df_merge <- readRDS("df_merge.rds")
 
 ###################################
