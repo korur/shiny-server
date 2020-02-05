@@ -14,6 +14,7 @@ library(shinydashboard)
 library(tidyverse)
 library(leaflet)
 library(DT)
+library(countup)
 
 ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
           "Philippines", "Hong Kong", "Malaysia", "Macau", "Tibet")
@@ -236,7 +237,8 @@ server <- function(input, output) {
             ,color = "red")  
     })
     output$numeu <- renderValueBox({
-        valueBox(
+     
+      valueBox(
           value = tags$p( data %>% filter(country %in% EU) %>% summarise(n=sum(confirmed)), style = "font-size: 70%;"),
           subtitle = tags$p("Europe", style = "font-size: 100%;")
             
@@ -281,7 +283,7 @@ server <- function(input, output) {
     })
     
     output$recovered<- renderValueBox({
-      valueBox( value = tags$p( print("680"), style = "font-size: 70%;"),
+      valueBox( value = tags$p( print("910"), style = "font-size: 70%;"),
                 subtitle = tags$p("Recovered", style = "font-size: 100%;")
         ,icon = icon("check-circle")
         ,color = "green")  
