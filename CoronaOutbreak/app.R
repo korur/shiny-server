@@ -345,10 +345,10 @@ server <- function(input, output) {
     output$casetimeline <- renderPlot({
       
       # Plot
+      
+      summary <- df_merge %>% group_by(`Last Update`) %>% summarise(n=sum(Confirmed, na.rm = TRUE))
       summary[17,2] <- 28296
       summary[17,1] <- as.POSIXct("2020-02-6 03:00:00", tz = "UTC")
-      summary <- df_merge %>% group_by(`Last Update`) %>% summarise(n=sum(Confirmed, na.rm = TRUE))
-      
       
       summary %>% ggplot(aes(x=`Last Update`, y=n)) +
         geom_line(size=2,color='red') + 
