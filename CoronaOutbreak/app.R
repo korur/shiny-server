@@ -330,7 +330,7 @@ server <- function(input, output) {
         addProviderTiles(providers$Stamen.TonerLite) %>% 
         addCircleMarkers(lng=data2$lon, lat=data2$lat, radius = 3* data2$radius, color = "red") %>% 
         addMarkers(data2$lon, data2$lat,  popup =   paste("<h4>","<b>", data2$area, "</b>", "<br>", data2$confirmed, "case/s","</h4>")) %>% 
-        setView(lng = 125, lat = 25, zoom = 4) %>% addSearchOSM() %>% addReverseSearchOSM()
+        setView(lng = 125, lat = 25, zoom = 4)
     })
     
     output$prediction <- renderText({
