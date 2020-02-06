@@ -16,6 +16,7 @@ library(leaflet)
 library(DT)
 
 
+
 ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
           "Philippines", "Hong Kong", "Malaysia", "Macau", "Tibet")
 America <- c("US", "Canada")
@@ -263,13 +264,13 @@ server <- function(input, output) {
     })
     
     output$death <- renderValueBox({
-      valueBox(value = tags$p(print(sum(data$deaths)), style = "font-size: 70%;"),
+      valueBox(value = tags$p(print(565), style = "font-size: 70%;"),
       subtitle = tags$p("Total Deaths", style = "font-size: 100%;")
                 ,icon = icon("cross")
                 ,color = "red")  
     })
     output$rate <- renderValueBox({
-      valueBox( value = tags$p( round(sum(data$deaths)/sum(data$confirmed) *100,1), style = "font-size: 70%;"),
+      valueBox( value = tags$p( round(565/sum(data$confirmed) *100,1), style = "font-size: 70%;"),
                 subtitle = tags$p("Death rate", style = "font-size: 100%;")
                ,icon = icon('percent')
                ,color = "red")  
@@ -282,7 +283,7 @@ server <- function(input, output) {
     })
     
     output$recovered<- renderValueBox({
-      valueBox( value = tags$p( print("910"), style = "font-size: 70%;"),
+      valueBox( value = tags$p( print("1261"), style = "font-size: 70%;"),
                 subtitle = tags$p("Recovered", style = "font-size: 100%;")
         ,icon = icon("check-circle")
         ,color = "green")  
@@ -328,8 +329,8 @@ server <- function(input, output) {
           attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>% 
         addProviderTiles(providers$Stamen.TonerLite) %>% 
         addCircleMarkers(lng=data2$lon, lat=data2$lat, radius = 3* data2$radius, color = "red") %>% 
-        addMarkers(data2$lon, data2$lat,  popup =   paste("<h4>", data2$area, "<br>", data2$confirmed, "case/s","</h4>"))%>% 
-        setView(lng = 125, lat = 25, zoom = 4)
+        addMarkers(data2$lon, data2$lat,  popup =   paste("<h4>","<b>", data2$area, "</b>", "<br>", data2$confirmed, "case/s","</h4>")) %>% 
+        setView(lng = 125, lat = 25, zoom = 4) %>% addSearchOSM() %>% addReverseSearchOSM()
     })
     
     output$prediction <- renderText({
@@ -344,6 +345,8 @@ server <- function(input, output) {
     output$casetimeline <- renderPlot({
       
       # Plot
+      summary[17,2] <- 28296
+      summary[17,1] <- as.POSIXct("2020-02-6 03:00:00", tz = "UTC")
       summary <- df_merge %>% group_by(`Last Update`) %>% summarise(n=sum(Confirmed, na.rm = TRUE))
       
       
