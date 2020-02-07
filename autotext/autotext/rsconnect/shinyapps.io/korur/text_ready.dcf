@@ -1,0 +1,12 @@
+name: text_ready
+title: text_ready
+username:
+account: korur
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1776556
+bundleId: 2782044
+url: https://korur.shinyapps.io/text_ready/
+when: 1581071576.77082
+asMultiple: FALSE
+asStatic: FALSE
