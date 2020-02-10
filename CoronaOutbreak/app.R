@@ -265,7 +265,7 @@ server <- function(input, output) {
     })
     
     output$death <- renderValueBox({
-      valueBox(value = tags$p(print(638), style = "font-size: 70%;"),
+      valueBox(value = tags$p(print(910), style = "font-size: 70%;"),
       subtitle = tags$p("Total Deaths", style = "font-size: 100%;")
                 ,icon = icon("cross")
                 ,color = "red")  
