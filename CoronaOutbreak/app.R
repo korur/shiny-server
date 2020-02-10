@@ -271,7 +271,7 @@ server <- function(input, output) {
                 ,color = "red")  
     })
     output$rate <- renderValueBox({
-      valueBox( value = tags$p( round(638/sum(data$confirmed) *100 , 1), style = "font-size: 70%;"),
+      valueBox( value = tags$p( round(910/sum(data$confirmed) *100 , 1), style = "font-size: 70%;"),
                 subtitle = tags$p("Death rate", style = "font-size: 100%;")
                ,icon = icon('percent')
                ,color = "red")  
@@ -284,7 +284,7 @@ server <- function(input, output) {
     })
     
     output$recovered<- renderValueBox({
-      valueBox( value = tags$p( print("1638"), style = "font-size: 70%;"),
+      valueBox( value = tags$p( print("3412"), style = "font-size: 70%;"),
                 subtitle = tags$p("Recovered", style = "font-size: 100%;")
         ,icon = icon("check-circle")
         ,color = "green")  
@@ -348,11 +348,6 @@ server <- function(input, output) {
       # Plot
       
       summary <- df_merge %>% group_by(`Last Update`) %>% summarise(n=sum(Confirmed, na.rm = TRUE))
-      summary[17,2] <- 28296
-      summary[17,1] <- as.POSIXct("2020-02-6 03:00:00", tz = "UTC")
-      summary[18,2] <- 31155
-      summary[18,1] <- as.POSIXct("2020-02-7 03:00:00", tz = "UTC")
-      
       summary %>% ggplot(aes(x=`Last Update`, y=n)) +
         geom_line(size=2,color='red') + 
         geom_point(size=8, color='red')+theme_minimal() +
