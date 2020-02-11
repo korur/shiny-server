@@ -19,58 +19,15 @@ library(DT)
 
 ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
           "Philippines", "Hong Kong", "Malaysia", "Macau", "Tibet")
-America <- c("US", "Canada", "United States of America")
+America <- c("US", "Canada")
 EU <- c("France", "UK", "Germany", "Italy", 
         "Finland", "Sweden", "Spain" , "Norway", "Belgium")
 
 
-# Functions needed
-
-#Rename
-#' 
-#' Rename first few columns
-#' 
-#' @param df Sheet.
-#' 
-#' @keywords internal
-rename_sheets <- function(df){
-    names(df)[1:4] <- c(
-        "state",
-        "country",
-        "lat", 
-        "lon"
-    )
-    return(df)
-}
-
-#' Pivot
-#' 
-#' Change data from wide to long.
-#' 
-#' @param df Sheet.
-#' 
-#' @keywords internal
-pivot <- function(df){
-    tidyr::pivot_longer(
-        df, 
-        tidyselect::contains("/"),
-        names_to = c("date"),
-        values_to = c("cases"),
-        values_ptypes = list(cases = "character")
-    )
-}
-
-#' Convert
-#' 
-#' Convert dates.
-#' 
-#' @keywords internal
-as_date <- function(date){
-    date <- lubridate::mdy_hm(date, "%m/%d/%Y %H:%M %p")
-    date[!is.na(date)]
-}
-
-
+# Shiny dashboard App
+data <- readRDS("c_df1.rds")
+data2 <- readRDS("map.rds")
+df_merge <- readRDS("df_merge.rds")
 
 ###################################
 ###################################
@@ -257,65 +214,7 @@ ui <- dashboardPage(title = 'Interactive app - Coronavirus Outbreak', header, si
 
 
 # create the server functions for the dashboard  
-server <- function(input, output, session) { 
-    
-    
-        # Re-execute this reactive expression after 1000 milliseconds
-        
-        
-        # Do something each time this is invalidated.
-        # The isolate() makes this observer _not_ get invalidated and re-executed
-        # when input$n changes.
-        
-    # jhu data
-    
-    confirmed_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/2019-nCoV/master/time_series/time_series_2019-ncov-Confirmed.csv"
-    deaths_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/2019-nCoV/master/time_series/time_series_2019-ncov-Deaths.csv"
-    recovered_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/2019-nCoV/master/time_series/time_series_2019-ncov-Recovered.csv"
-    
-    # confirmed cases
-    confirmed <- readr::read_csv(confirmed_sheet, col_types = readr::cols())
-    
-    # recovered cases
-    recovered <- readr::read_csv(recovered_sheet, col_types = readr::cols())
-    
-    # deaths
-    deaths <- readr::read_csv(deaths_sheet, col_types = readr::cols()) 
-    
-    # add col
-    confirmed$type <- "confirmed"
-    recovered$type <- "recovered"
-    deaths$type <- "death"
-    
-    # rename
-    confirmed <- rename_sheets(confirmed)
-    recovered <- rename_sheets(recovered)
-    deaths <- rename_sheets(deaths)  
-    
-    # pivot longer
-    confirmed <- pivot(confirmed)
-    recovered <- pivot(recovered)
-    deaths <- pivot(deaths)    
-    
-    suppressWarnings({    
-    df <- dplyr::bind_rows(confirmed, recovered, deaths) %>% 
-        dplyr::mutate(
-            date = as_date(date),
-            cases = trimws(cases),
-            cases = as.numeric(cases),
-            cases = dplyr::case_when(
-                is.na(cases) ~ 0,
-                TRUE ~ cases
-            ),
-            country = dplyr::case_when(
-                country == "US" ~ "United States of America",
-                TRUE ~ country
-            ),
-            country_iso2c = countrycode::countrycode(country, "country.name", "iso2c")
-        )
-    })
-    df$state <- ifelse(is.na(df$state), df$country,df$state)
-    
+server <- function(input, output) { 
     
     
     ###################################
@@ -326,14 +225,14 @@ server <- function(input, output, session) {
     
     #creating the valueBoxOutput content
     output$numcases <- renderValueBox({
-        valueBox( value = tags$p( df %>% filter(type=="confirmed" & date==max(date)) %>% select(cases) %>% sum(), style = "font-size: 70%;"),
+        valueBox( value = tags$p( sum(data$Confirmed), style = "font-size: 70%;"),
                   subtitle = tags$p("Total Cases", style = "font-size: 100%;") 
                   ,icon = icon("procedures")
                   ,color = "red")  
     })
     output$numchina <- renderValueBox({
         valueBox(
-            value = tags$p( df %>% filter(country == "Mainland China" & type=="confirmed" & date==max(date)) %>% summarise(n=sum(cases)), style = "font-size: 70%;"),
+            value = tags$p( data %>% filter(`Country/Region` == "Mainland China") %>% summarise(n=sum(Confirmed)), style = "font-size: 70%;"),
             subtitle = tags$p("China", style = "font-size: 100%;")
             ,icon = icon('procedures')
             ,color = "red")  
@@ -341,7 +240,7 @@ server <- function(input, output, session) {
     output$numeu <- renderValueBox({
         
         valueBox(
-            value = tags$p( df %>% filter(country %in% EU & type=="confirmed" & date==max(date)) %>% summarise(n=sum(cases)), style = "font-size: 70%;"),
+            value = tags$p( data %>% filter(`Country/Region` %in% EU) %>% summarise(n=sum(Confirmed)), style = "font-size: 70%;"),
             subtitle = tags$p("Europe", style = "font-size: 100%;")
             
             ,icon = icon("procedures")
@@ -350,7 +249,7 @@ server <- function(input, output, session) {
     
     output$numus <- renderValueBox({
         valueBox( 
-            value = tags$p(df %>% filter(country %in% America & type=="confirmed" & date==max(date)) %>% summarise(n=sum(cases)), style = "font-size: 70%;"),
+            value = tags$p(data %>% filter(`Country/Region` %in% America) %>% summarise(n=sum(Confirmed)), style = "font-size: 70%;"),
             subtitle = tags$p("AMERICA", style = "font-size: 100%;")
             , "AMERICA"
             ,icon = icon("procedures")
@@ -358,34 +257,34 @@ server <- function(input, output, session) {
     })
     output$update <- renderValueBox({
         valueBox( 
-            value = tags$p(print("Auto Updates"), style = "font-size: 70%;"),
-            subtitle = tags$p(Sys.time(), style = "font-size: 100%;")
+            value = tags$p(print("Last Updated"), style = "font-size: 70%;"),
+            subtitle = tags$p("Feb 11, 2020 10 am UTC", style = "font-size: 100%;")
             ,icon = icon("hourglass-start")
             ,color = "blue") 
         
     })
     
     output$death <- renderValueBox({
-        valueBox(value = tags$p(df %>% filter(type=="death" & date==max(date)) %>% select(cases) %>% sum(), style = "font-size: 70%;"),
+        valueBox(value = tags$p(print(sum(data$Deaths)), style = "font-size: 70%;"),
                  subtitle = tags$p("Total Deaths", style = "font-size: 100%;")
                  ,icon = icon("cross")
                  ,color = "red")  
     })
     output$rate <- renderValueBox({
-        valueBox( value = tags$p( round((df %>% filter(type=="death" & date==max(date)) %>% select(cases) %>% sum())/(df %>% filter(type=="confirmed" & date==max(date)) %>% select(cases) %>% sum()) *100,1), style = "font-size: 70%;"),
+        valueBox( value = tags$p( round(sum(data$Deaths)/sum(data$Confirmed) *100 , 1), style = "font-size: 70%;"),
                   subtitle = tags$p("Death rate", style = "font-size: 100%;")
                   ,icon = icon('percent')
                   ,color = "red")  
     })
     output$count <- renderValueBox({
-        valueBox(value = tags$p( df %>% distinct(country) %>% count(), style = "font-size: 70%;"),
+        valueBox(value = tags$p( data2 %>% distinct(`Country/Region`) %>% count(), style = "font-size: 70%;"),
                  subtitle = tags$p("Countries", style = "font-size: 100%;")
                  ,icon = icon("flag")
                  ,color = "red")  
     })
     
     output$recovered<- renderValueBox({
-        valueBox( value = tags$p( df %>% filter(type=="recovered" & date==max(date)) %>% select(cases) %>% sum(), style = "font-size: 70%;"),
+        valueBox( value = tags$p( print(sum(data$Recovered)), style = "font-size: 70%;"),
                   subtitle = tags$p("Recovered", style = "font-size: 100%;")
                   ,icon = icon("check-circle")
                   ,color = "green")  
@@ -407,9 +306,9 @@ server <- function(input, output, session) {
     
     output$countries <- renderPlot({
         # Plot
-        df_sum <- df %>% filter(country != "Mainland China" & date ==max(date)) %>% group_by(country) %>% summarise(n=sum(cases)) %>% arrange(-n)
-        df_sum <- df_sum  %>% mutate(country=fct_reorder(country, n, .desc=TRUE))
-        df_sum %>% ggplot(aes(x=country,y=n, fill =n, height = "200%" )) + 
+        df_sum <-  data %>% filter(`Country/Region` != "Mainland China") %>% group_by(`Country/Region`) %>% summarise(n=sum(Confirmed)) %>% arrange(-n)
+        df_sum =df_sum  %>% mutate(`Country/Region`=fct_reorder(`Country/Region`, n, .desc=TRUE))
+        df_sum %>% ggplot(aes(x=`Country/Region`,y=n, fill =n, height = "200%" )) + 
             geom_col() + 
             theme_minimal() + 
             theme(legend.position = "none",text = element_text(size=20), plot.title = element_text( hjust=0.5, vjust = -1)) +
@@ -424,18 +323,14 @@ server <- function(input, output, session) {
     
     output$map <- renderLeaflet({
         
-        dfmap <- df %>% filter(type=="confirmed",date==max(date)) 
-        dfmap$radius <- as.numeric(cut(dfmap$cases, breaks =c(-Inf,4,16,64,128,256,512,1024,2048,4096,Inf)))
-        dfmap[dfmap$state== "Diamond Princess cruise ship",][3] <- 35.4498
-        dfmap[dfmap$state== "Diamond Princess cruise ship",][4] <- 139.6649
-        labels = c("<4", "4-16", "16-64", "64-128","128-256","256-512","512-1024","1024-2048","2048-4096", "> 4096" )
-        m <- leaflet(dfmap) %>%
+        
+        m <- leaflet(data2) %>%
             addTiles(
                 urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
                 attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>% 
             addProviderTiles(providers$Stamen.TonerLite) %>% 
-            addCircleMarkers(lng=dfmap$lon, lat=dfmap$lat, radius = 3* dfmap$radius, color = "red") %>% 
-            addMarkers(dfmap$lon, dfmap$lat,  popup =   paste("<h4>","<b>", dfmap$state, "</b>", "<br>", dfmap$cases, "case/s","</h4>")) %>% 
+            addCircleMarkers(lng=data2$lon, lat=data2$lat, radius = 3* data2$radius, color = "red") %>% 
+            addMarkers(data2$lon, data2$lat,  popup =   paste("<h4>","<b>", data2$'Province/State', "</b>", "<br>", data2$Confirmed, "case/s","</h4>")) %>% 
             setView(lng = 125, lat = 25, zoom = 4)
     })
     
@@ -452,9 +347,9 @@ server <- function(input, output, session) {
         
         # Plot
         
-        summary <- df %>% filter(type =="confirmed") %>%  group_by(date) %>% summarise(n=sum(cases)) %>% print(n=30)
-        summary %>% ggplot(aes(x=date, y=n)) +
-            geom_smooth(method = "loess",color='red', size =2) +
+        summary <- df_merge %>% group_by(`Last Update`) %>% summarise(n=sum(Confirmed, na.rm = TRUE))
+        summary %>% ggplot(aes(x=`Last Update`, y=n)) +
+            geom_line(size=2,color='red') + 
             geom_point(size=8, color='red')+theme_minimal() +
             theme(legend.position = "none", axis.title.x = element_blank(), text = element_text(size=20), plot.title = element_text( hjust=0.5, vjust = -1)) + 
             labs(
@@ -465,8 +360,10 @@ server <- function(input, output, session) {
     }) 
     
     output$df_wide <- renderDataTable({
-        dt <- df %>% filter(type=="confirmed") %>% spread(date, cases)
-        datatable(dt, options = list(paging = TRUE), height='400px') 
+        
+        df_wide <- df_merge[, c(2,3,4)] %>% group_by( `Country/Region`, `Last Update`) %>% summarise(Confirmed = sum(Confirmed)) %>% spread(`Last Update`, Confirmed)
+        df_wide[is.na(df_wide)] <- 0
+        datatable(df_wide, options = list(paging = TRUE), height='400px') 
         
     }) 
     
