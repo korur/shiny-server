@@ -15,6 +15,7 @@ library(shinydashboard)
 library(tidyverse)
 library(leaflet)
 library(DT)
+library(countup)
 
 
 ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
@@ -145,7 +146,7 @@ sidebar <- dashboardSidebar(
 
 # combine the two fluid rows to make the body
 body <- dashboardBody( 
-    
+  
     ################################### 
     #######        TOP ROW      #######
     ###################################
@@ -241,7 +242,7 @@ body <- dashboardBody(
 ###################################
 
 
-ui <- dashboardPage(title = 'Interactive app - Coronavirus Outbreak', header, sidebar, body, skin= "blue")
+ui <- dashboardPage( header, sidebar, body, skin= "blue")
 
 
 
@@ -326,14 +327,14 @@ server <- function(input, output, session) {
     
     #creating the valueBoxOutput content
     output$numcases <- renderValueBox({
-        valueBox( value = tags$p( df %>% filter(type=="confirmed" & date==max(date)) %>% select(cases) %>% sum(), style = "font-size: 70%;"),
+        valueBox( value = tags$p( countup(df %>% filter(type=="confirmed" & date==max(date)) %>% select(cases) %>% sum()), style = "font-size: 70%;"),
                   subtitle = tags$p("Total Cases", style = "font-size: 100%;") 
                   ,icon = icon("procedures")
                   ,color = "red")  
     })
     output$numchina <- renderValueBox({
         valueBox(
-            value = tags$p( df %>% filter(country == "Mainland China" & type=="confirmed" & date==max(date)) %>% summarise(n=sum(cases)), style = "font-size: 70%;"),
+            value = tags$p(countup(df %>% filter(country == "Mainland China" & type=="confirmed" & date==max(date)) %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
             subtitle = tags$p("China", style = "font-size: 100%;")
             ,icon = icon('procedures')
             ,color = "red")  
@@ -341,7 +342,7 @@ server <- function(input, output, session) {
     output$numeu <- renderValueBox({
         
         valueBox(
-            value = tags$p( df %>% filter(country %in% EU & type=="confirmed" & date==max(date)) %>% summarise(n=sum(cases)), style = "font-size: 70%;"),
+            value = tags$p( countup(df %>% filter(country %in% EU & type=="confirmed" & date==max(date)) %>% summarise(n=sum(cases)) %>% pull ), style = "font-size: 70%;"),
             subtitle = tags$p("Europe", style = "font-size: 100%;")
             
             ,icon = icon("procedures")
@@ -350,7 +351,7 @@ server <- function(input, output, session) {
     
     output$numus <- renderValueBox({
         valueBox( 
-            value = tags$p(df %>% filter(country %in% America & type=="confirmed" & date==max(date)) %>% summarise(n=sum(cases)), style = "font-size: 70%;"),
+            value = tags$p( countup(df %>% filter(country %in% America & type=="confirmed" & date==max(date)) %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
             subtitle = tags$p("AMERICA", style = "font-size: 100%;")
             , "AMERICA"
             ,icon = icon("procedures")
@@ -366,7 +367,7 @@ server <- function(input, output, session) {
     })
     
     output$death <- renderValueBox({
-        valueBox(value = tags$p(df %>% filter(type=="death" & date==max(date)) %>% select(cases) %>% sum(), style = "font-size: 70%;"),
+        valueBox(value = tags$p(countup(df %>% filter(type=="death" & date==max(date)) %>% select(cases) %>% sum()), style = "font-size: 70%;"),
                  subtitle = tags$p("Total Deaths", style = "font-size: 100%;")
                  ,icon = icon("cross")
                  ,color = "red")  
@@ -378,14 +379,14 @@ server <- function(input, output, session) {
                   ,color = "red")  
     })
     output$count <- renderValueBox({
-        valueBox(value = tags$p( df %>% distinct(country) %>% count(), style = "font-size: 70%;"),
+        valueBox(value = tags$p( countup(df %>% distinct(country) %>% count() %>% pull), style = "font-size: 70%;"),
                  subtitle = tags$p("Countries", style = "font-size: 100%;")
                  ,icon = icon("flag")
                  ,color = "red")  
     })
     
     output$recovered<- renderValueBox({
-        valueBox( value = tags$p( df %>% filter(type=="recovered" & date==max(date)) %>% select(cases) %>% sum(), style = "font-size: 70%;"),
+        valueBox( value = tags$p( countup(df %>% filter(type=="recovered" & date==max(date)) %>% select(cases) %>% sum()), style = "font-size: 70%;"),
                   subtitle = tags$p("Recovered", style = "font-size: 100%;")
                   ,icon = icon("check-circle")
                   ,color = "green")  
