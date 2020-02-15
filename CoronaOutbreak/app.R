@@ -374,7 +374,7 @@ server <- function(input, output, session) {
                  ,color = "red")  
     })
     output$rate <- renderValueBox({
-        valueBox( value = tags$p( round((df %>% filter(type=="death" & date==max(date)) %>% select(cases) %>% sum())/(df %>% filter(type=="confirmed" & date==max(date)) %>% select(cases) %>% sum()) *100,1), style = "font-size: 70%;"),
+        valueBox( value = tags$p( round((df %>% filter(type=="death" & date==max(date)) %>% select(cases) %>% sum())/(df %>% filter(type!="death" & date==max(date)) %>% select(cases) %>% sum()) *100,1), style = "font-size: 70%;"),
                   subtitle = tags$p("Death rate", style = "font-size: 100%;")
                   ,icon = icon('percent')
                   ,color = "red")  
@@ -469,25 +469,6 @@ server <- function(input, output, session) {
     output$df_wide <- renderDataTable({
         dt <- df %>% filter(type=="confirmed") %>% spread(date, cases)
         datatable(dt, options = list(paging = TRUE), height='400px') 
-        
-    }) 
-    
-    output$facet <- renderPlot({
-        
-        dfm <- df_merge[,c(1,3,4)]
-        
-        
-        dfm %>% filter(Confirmed >1) %>% mutate(`Province/State`=fct_reorder(`Province/State`,Confirmed, .desc=TRUE))  %>% 
-            ggplot(aes(x=`Last Update`, y=Confirmed))+facet_wrap(.~`Province/State`, scales = "free_y", nrow=10) + 
-            geom_line(color='red') + 
-            geom_point(color='red',size=2) +
-            theme_minimal() + 
-            theme(legend.position="none" , text = element_text(size=20), axis.text.x=element_text(angle=45)) + 
-            labs(
-                caption= "www.dataatomic.com",
-                x = "Time", 
-                y = "Number of cases",
-                title = "Regional increases of Coronavirus Cases with Time")
         
     }) 
     output$wflow <- renderImage({
