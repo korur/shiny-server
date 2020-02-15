@@ -67,7 +67,7 @@ pivot <- function(df){
 #' 
 #' @keywords internal
 as_date <- function(date){
-    date <- lubridate::mdy_hm(date, "%m/%d/%Y %H:%M %p")
+    date <- lubridate::mdy(date, "%m/%d/%Y")
     date[!is.na(date)]
 }
 
@@ -269,11 +269,12 @@ server <- function(input, output, session) {
         # when input$n changes.
         
     # jhu data
-    
-  confirmed_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/archived_data/time_series/time_series_2019-ncov-Confirmed.csv"
-  deaths_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/archived_data/time_series/time_series_2019-ncov-Deaths.csv"
-  recovered_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/archived_data/time_series/time_series_2019-ncov-Recovered.csv"
-    
+  
+  confirmed_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv"
+  deaths_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv"
+  recovered_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv"
+  
+  
     # confirmed cases
     confirmed <- readr::read_csv(confirmed_sheet, col_types = readr::cols())
     
