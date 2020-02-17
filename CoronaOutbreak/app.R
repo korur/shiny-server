@@ -1,7 +1,7 @@
 # With auto updates from the database
 # Connect
-config <- yaml::read_yaml("/etc/skconfig")   
-# config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml")
+ config <- yaml::read_yaml("/etc/skconfig")   # for digitalocean ubuntu 
+# config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml") # local computer
 con <- pool::dbPool(
 
   RPostgres::Postgres(),
@@ -128,6 +128,7 @@ sidebar <- dashboardSidebar(
 body <- dashboardBody( 
   use_waiter(), # dependencies
   waiter_show_on_load(spin_3circles(), color = "#ffffff"),
+  sever::use_sever(),
 
   
     ################################### 
@@ -136,7 +137,7 @@ body <- dashboardBody(
     
     tabItems(
         tabItem("dashboard",
-                
+              
                 fluidRow(
                     valueBoxOutput("numcases", width = 2)
                     ,valueBoxOutput("numchina", width = 2)
