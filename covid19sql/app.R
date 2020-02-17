@@ -1,7 +1,7 @@
 # With auto updates from the database
 # Connect
 config <- yaml::read_yaml("/etc/skconfig")   
-#config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml")
+# config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml")
 con <- pool::dbPool(
 
   RPostgres::Postgres(),
@@ -59,10 +59,18 @@ header <- dashboardHeader(
     dropdownMenu(type = "notifications", 
                  
                  notificationItem(
-                     text = "Created by www.dataatomic.com", 
+                     text = tags$b("Created by www.dataatomic.com"), 
                      icon = shiny::icon("atom"),
                      status = "success",
-                     href = "https://www.dataatomic.com")
+                     href = "https://www.dataatomic.com"),
+                 
+                 notificationItem(
+                   text = tags$b("Update: Death rate is calculated as",
+                                 tags$br(),
+                                 "death / (confirmed + recovered)", style = "display: inline-block; vertical-align: middle;", 
+                                 icon = shiny::icon("atom"),
+                                 status = "success",
+                                 href = "https://www.dataatomic.com"))
                  
     )
 )
@@ -156,13 +164,13 @@ body <- dashboardBody(
                 
                 fluidRow( 
                     box(
-                        width = "12"
+                        width = "11"
                         ,solidHeader = TRUE 
                         ,collapsible = TRUE
                         ,leafletOutput("map", height = "700px") 
                     ),
                     box(
-                        width = "12"
+                        width = "11"
                         ,solidHeader = TRUE 
                         ,collapsible = TRUE 
                         ,plotOutput("casetimeline", height = "700px") 
@@ -234,7 +242,20 @@ ui <- dashboardPage( header, sidebar, body, skin= "blue")
 
 # create the server functions for the dashboard  
 server <- function(input, output, session) { 
-  
+
+    sever::sever(
+    tagList(
+      h1("Whoops!"),
+      p("It looks like you were disconnected"),
+      shiny::tags$button(
+        "Reload",
+        style = "color:#000;background-color:#fff;",
+        class = "button button-raised",
+        onClick = "location.reload();"
+      )
+    ),
+    bg_color = "#000"
+  )
   ####
   df <- reactivePoll(3600000,session, 
                  checkFunc = function(){ 
@@ -249,7 +270,7 @@ server <- function(input, output, session) {
   dflight <- reactive({
   dflight <- df() %>% filter(date==max(date))   
   })
-  waiter_hide()
+ 
     
     ###################################
     #######                     #######
@@ -291,7 +312,7 @@ server <- function(input, output, session) {
     })
     output$update <- renderValueBox({
         valueBox( 
-            value = tags$p(print("Auto Updates"), style = "font-size: 70%;"),
+            value = tags$p("Auto Updates", style = "font-size: 70%;"),
             subtitle = tags$p(paste("Last update:", diff(), "minutes ago"), style = "font-size: 100%;")
             ,icon = icon("hourglass-start")
             ,color = "blue") 
@@ -323,7 +344,7 @@ server <- function(input, output, session) {
                   ,color = "green")  
     })
     output$up <- renderValueBox({
-        valueBox( value = tags$p( print("Outbreak"), style = "font-size: 70%;"),
+        valueBox( value = tags$p("Outbreak", style = "font-size: 70%;"),
                   subtitle = tags$p("2019-nCoV", style = "font-size: 100%;")
                   ,icon = icon("procedures")
                   ,color = "blue") 
@@ -341,7 +362,7 @@ server <- function(input, output, session) {
         # Plot
         df_sum <- dflight() %>% filter(country != "Mainland China") %>% group_by(country) %>% summarise(n=sum(cases)) %>% arrange(-n)
         df_sum <- df_sum  %>% mutate(country=fct_reorder(country, n, .desc=TRUE))
-        df_sum %>% ggplot(aes(x=country,y=n, fill =n, height = "200%" )) + 
+        df_sum %>% ggplot(aes(x=country,y=n, fill =n, height = "150%" )) + 
             geom_col() + 
             theme_minimal() + 
             theme(legend.position = "none",text = element_text(size=20), plot.title = element_text( hjust=0.5, vjust = -1)) +
@@ -384,15 +405,15 @@ server <- function(input, output, session) {
         
         # Plot
         
-        summary <- df() %>% filter(type =="confirmed") %>%  group_by(date) %>% summarise(n=sum(cases)) %>% print(n=30)
+        summary <- df() %>% filter(type =="confirmed") %>%  group_by(date) %>% summarise(n=sum(cases))
         summary %>% ggplot(aes(x=date, y=n)) +
             geom_smooth(method = "loess",color='red', size =2) +
             geom_point(size=8, color='red')+theme_minimal() +
             theme(legend.position = "none", axis.title.x = element_blank(), text = element_text(size=20), plot.title = element_text( hjust=0.5, vjust = -1)) + 
             labs(
-                caption= "   www.dataatomic.com",
+                caption= "www.dataatomic.com",
                 y = "Number of infected people",
-                title = "Global Cases")
+                title = "Global Cases") + expand_limits(x = Sys.Date()+2)
         
     }) 
     
@@ -413,7 +434,8 @@ server <- function(input, output, session) {
         },
         contentType = "text/csv"
     )
-    
+    Sys.sleep(1.6)
+    waiter_hide()
 }
 shinyApp(ui = ui, server = server)
 
