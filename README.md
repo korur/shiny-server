@@ -9,14 +9,14 @@ url: http://www.dataatomic-tools.com/shiny/CoronaOutbreak/
 </p>
 
 Overview Mutation counts and Genomic alterations % in different types of cancers
-url: http://dataatomic-tools.com/shiny/TCGA_dashboard_on_server/
+url: http://tools.dataatomic.com/shiny/TCGA_dashboard_on_server/
 
 <p align="center">
   <img src="images/tcga.png">
 </p>
 
 Text mining / NLP from Biotech financial information
-url: http://dataatomic-tools.com/shiny/autotext/
+url: http://tools.dataatomic.com/shiny/autotext/
 
 <p align="center">
   <img src="images/text.png">
