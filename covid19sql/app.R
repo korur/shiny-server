@@ -1,7 +1,7 @@
 # With auto updates from the database
 # Connect
 config <- yaml::read_yaml("/etc/skconfig")   
-
+#config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml")
 con <- pool::dbPool(
 
   RPostgres::Postgres(),
@@ -244,7 +244,7 @@ server <- function(input, output, session) {
                    })
   diff <- reactive({
   log <- DBI::dbGetQuery(con, "SELECT MAX(last_updated) FROM log;")
-  diff <- difftime(Sys.time(), log$max) %>% as.integer()
+  diff <- difftime(Sys.time(), log$max, units = "min") %>% as.integer()
   })
   dflight <- reactive({
   dflight <- df() %>% filter(date==max(date))   
