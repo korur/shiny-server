@@ -1,19 +1,4 @@
-# With auto updates from the database
-# Connect
-config <- yaml::read_yaml("/etc/skconfig")   
-# config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml")
-con <- pool::dbPool(
-
-  RPostgres::Postgres(),
-host = config$database$host,
-user = config$database$user,
-password = config$database$password,
-dbname = config$database$name,
-port = 25060) 
-
-
-
-
+# With auto updates
 
 ###################################
 ###################################
@@ -31,9 +16,6 @@ library(tidyverse)
 library(leaflet)
 library(DT)
 library(countup)
-library(waiter)
-library(DBI)
-library(pool)
 
 
 ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
@@ -42,6 +24,52 @@ America <- c("US", "Canada", "United States of America")
 EU <- c("France", "UK", "Germany", "Italy", 
         "Finland", "Sweden", "Spain" , "Norway", "Belgium")
 
+
+# Functions needed
+
+#Rename
+#' 
+#' Rename first few columns
+#' 
+#' @param df Sheet.
+#' 
+#' @keywords internal
+rename_sheets <- function(df){
+    names(df)[1:4] <- c(
+        "state",
+        "country",
+        "lat", 
+        "lon"
+    )
+    return(df)
+}
+
+#' Pivot
+#' 
+#' Change data from wide to long.
+#' 
+#' @param df Sheet.
+#' 
+#' @keywords internal
+pivot <- function(df){
+    tidyr::pivot_longer(
+        df, 
+        tidyselect::contains("/"),
+        names_to = c("date"),
+        values_to = c("cases"),
+        values_ptypes = list(cases = "character")
+    )
+}
+
+#' Convert
+#' 
+#' Convert dates.
+#' 
+#' @keywords internal
+as_date <- function(date){
+    date <- lubridate::mdy(date, "%m/%d/%Y")
+    date[!is.na(date)]
+}
 
 
 
@@ -59,18 +87,10 @@ header <- dashboardHeader(
     dropdownMenu(type = "notifications", 
                  
                  notificationItem(
-                     text = tags$b("Created by www.dataatomic.com"), 
+                     text = "Created by www.dataatomic.com", 
                      icon = shiny::icon("atom"),
                      status = "success",
-                     href = "https://www.dataatomic.com"),
-                 
-                 notificationItem(
-                   text = tags$b("Update: Death rate is calculated as",
-                                 tags$br(),
-                                 "death / (confirmed + recovered)", style = "display: inline-block; vertical-align: middle;", 
-                                 icon = shiny::icon("atom"),
-                                 status = "success",
-                                 href = "https://www.dataatomic.com"))
+                     href = "https://www.dataatomic.com")
                  
     )
 )
@@ -126,9 +146,6 @@ sidebar <- dashboardSidebar(
 
 # combine the two fluid rows to make the body
 body <- dashboardBody( 
-  use_waiter(), # dependencies
-  waiter_show_on_load(spin_3circles(), color = "#ffffff"),
-
   
     ################################### 
     #######        TOP ROW      #######
@@ -164,13 +181,13 @@ body <- dashboardBody(
                 
                 fluidRow( 
                     box(
-                        width = "11"
+                        width = "12"
                         ,solidHeader = TRUE 
                         ,collapsible = TRUE
                         ,leafletOutput("map", height = "700px") 
                     ),
                     box(
-                        width = "11"
+                        width = "12"
                         ,solidHeader = TRUE 
                         ,collapsible = TRUE 
                         ,plotOutput("casetimeline", height = "700px") 
@@ -242,35 +259,66 @@ ui <- dashboardPage( header, sidebar, body, skin= "blue")
 
 # create the server functions for the dashboard  
 server <- function(input, output, session) { 
-
-    sever::sever(
-    tagList(
-      h1("Whoops!"),
-      p("It looks like you were disconnected"),
-      shiny::tags$button(
-        "Reload",
-        style = "color:#000;background-color:#fff;",
-        class = "button button-raised",
-        onClick = "location.reload();"
-      )
-    ),
-    bg_color = "#000"
-  )
-  ####
-  df <- reactivePoll(3600000,session, 
-                 checkFunc = function(){ 
-                 log <- DBI::dbGetQuery(con, "SELECT MAX(last_updated) FROM log;")},
-                 valueFunc = function() {
-                   df <- DBI::dbReadTable(con, "jhu")
-                   })
-  diff <- reactive({
-  log <- DBI::dbGetQuery(con, "SELECT MAX(last_updated) FROM log;")
-  diff <- difftime(Sys.time(), log$max, units = "min") %>% as.integer()
-  })
-  dflight <- reactive({
-  dflight <- df() %>% filter(date==max(date))   
-  })
- 
+    
+    
+        # Re-execute this reactive expression after 1000 milliseconds
+        
+        
+        # Do something each time this is invalidated.
+        # The isolate() makes this observer _not_ get invalidated and re-executed
+        # when input$n changes.
+        
+    # jhu data
+  
+  confirmed_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv"
+  deaths_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv"
+  recovered_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv"
+  
+  
+    # confirmed cases
+    confirmed <- readr::read_csv(confirmed_sheet, col_types = readr::cols())
+    
+    # recovered cases
+    recovered <- readr::read_csv(recovered_sheet, col_types = readr::cols())
+    
+    # deaths
+    deaths <- readr::read_csv(deaths_sheet, col_types = readr::cols()) 
+    
+    # add col
+    confirmed$type <- "confirmed"
+    recovered$type <- "recovered"
+    deaths$type <- "death"
+    
+    # rename
+    confirmed <- rename_sheets(confirmed)
+    recovered <- rename_sheets(recovered)
+    deaths <- rename_sheets(deaths)  
+    
+    # pivot longer
+    confirmed <- pivot(confirmed)
+    recovered <- pivot(recovered)
+    deaths <- pivot(deaths)    
+    
+    suppressWarnings({    
+    df <- dplyr::bind_rows(confirmed, recovered, deaths) %>% 
+        dplyr::mutate(
+            date = as_date(date),
+            cases = trimws(cases),
+            cases = as.numeric(cases),
+            cases = dplyr::case_when(
+                is.na(cases) ~ 0,
+                TRUE ~ cases
+            ),
+            country = dplyr::case_when(
+                country == "US" ~ "United States of America",
+                TRUE ~ country
+            ),
+            country_iso2c = countrycode::countrycode(country, "country.name", "iso2c")
+        )
+    })
+    df$state <- ifelse(is.na(df$state), df$country,df$state)
+    
+    
     
     ###################################
     #######                     #######
@@ -280,14 +328,14 @@ server <- function(input, output, session) {
     
     #creating the valueBoxOutput content
     output$numcases <- renderValueBox({
-        valueBox( value = tags$p( countup(dflight() %>% filter(type=="confirmed") %>% select(cases) %>% sum()), style = "font-size: 70%;"),
+        valueBox( value = tags$p( countup(df %>% filter(type=="confirmed" & date==max(date)) %>% select(cases) %>% sum()), style = "font-size: 70%;"),
                   subtitle = tags$p("Total Cases", style = "font-size: 100%;") 
                   ,icon = icon("procedures")
                   ,color = "red")  
     })
     output$numchina <- renderValueBox({
         valueBox(
-            value = tags$p(countup(dflight() %>% filter(country == "Mainland China" & type=="confirmed") %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
+            value = tags$p(countup(df %>% filter(country == "Mainland China" & type=="confirmed" & date==max(date)) %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
             subtitle = tags$p("China", style = "font-size: 100%;")
             ,icon = icon('procedures')
             ,color = "red")  
@@ -295,7 +343,7 @@ server <- function(input, output, session) {
     output$numeu <- renderValueBox({
         
         valueBox(
-            value = tags$p( countup(dflight() %>% filter(country %in% EU & type=="confirmed") %>% summarise(n=sum(cases)) %>% pull ), style = "font-size: 70%;"),
+            value = tags$p( countup(df %>% filter(country %in% EU & type=="confirmed" & date==max(date)) %>% summarise(n=sum(cases)) %>% pull ), style = "font-size: 70%;"),
             subtitle = tags$p("Europe", style = "font-size: 100%;")
             
             ,icon = icon("procedures")
@@ -304,7 +352,7 @@ server <- function(input, output, session) {
     
     output$numus <- renderValueBox({
         valueBox( 
-            value = tags$p( countup(dflight() %>% filter(country %in% America & type=="confirmed") %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
+            value = tags$p( countup(df %>% filter(country %in% America & type=="confirmed" & date==max(date)) %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
             subtitle = tags$p("AMERICA", style = "font-size: 100%;")
             , "AMERICA"
             ,icon = icon("procedures")
@@ -312,39 +360,40 @@ server <- function(input, output, session) {
     })
     output$update <- renderValueBox({
         valueBox( 
-            value = tags$p("Auto Updates", style = "font-size: 70%;"),
-            subtitle = tags$p(paste("Last update:", diff(), "minutes ago"), style = "font-size: 100%;")
+            value = tags$p(print("Auto Updates"), style = "font-size: 70%;"),
+            subtitle = tags$p(Sys.time(), style = "font-size: 100%;")
             ,icon = icon("hourglass-start")
             ,color = "blue") 
         
     })
+    
     output$death <- renderValueBox({
-        valueBox(value = tags$p(countup(dflight() %>% filter(type=="death") %>% select(cases) %>% sum()), style = "font-size: 70%;"),
+        valueBox(value = tags$p(countup(df %>% filter(type=="death" & date==max(date)) %>% select(cases) %>% sum()), style = "font-size: 70%;"),
                  subtitle = tags$p("Total Deaths", style = "font-size: 100%;")
                  ,icon = icon("cross")
                  ,color = "red")  
     })
     output$rate <- renderValueBox({
-        valueBox( value = tags$p( round((dflight() %>% filter(type=="death") %>% select(cases) %>% sum())/(df() %>% filter(type!="death" & date==max(date)) %>% select(cases) %>% sum()) *100,1), style = "font-size: 70%;"),
+        valueBox( value = tags$p( round((df %>% filter(type=="death" & date==max(date)) %>% select(cases) %>% sum())/(df %>% filter(type!="death" & date==max(date)) %>% select(cases) %>% sum()) *100,1), style = "font-size: 70%;"),
                   subtitle = tags$p("Death rate", style = "font-size: 100%;")
                   ,icon = icon('percent')
                   ,color = "red")  
     })
     output$count <- renderValueBox({
-        valueBox(value = tags$p( countup(df() %>% distinct(country) %>% count() %>% pull), style = "font-size: 70%;"),
+        valueBox(value = tags$p( countup(df %>% distinct(country) %>% count() %>% pull), style = "font-size: 70%;"),
                  subtitle = tags$p("Countries", style = "font-size: 100%;")
                  ,icon = icon("flag")
                  ,color = "red")  
     })
     
     output$recovered<- renderValueBox({
-        valueBox( value = tags$p( countup(dflight() %>% filter(type=="recovered") %>% select(cases) %>% sum()), style = "font-size: 70%;"),
+        valueBox( value = tags$p( countup(df %>% filter(type=="recovered" & date==max(date)) %>% select(cases) %>% sum()), style = "font-size: 70%;"),
                   subtitle = tags$p("Recovered", style = "font-size: 100%;")
                   ,icon = icon("check-circle")
                   ,color = "green")  
     })
     output$up <- renderValueBox({
-        valueBox( value = tags$p("Outbreak", style = "font-size: 70%;"),
+        valueBox( value = tags$p( print("Outbreak"), style = "font-size: 70%;"),
                   subtitle = tags$p("2019-nCoV", style = "font-size: 100%;")
                   ,icon = icon("procedures")
                   ,color = "blue") 
@@ -360,9 +409,9 @@ server <- function(input, output, session) {
     
     output$countries <- renderPlot({
         # Plot
-        df_sum <- dflight() %>% filter(country != "Mainland China") %>% group_by(country) %>% summarise(n=sum(cases)) %>% arrange(-n)
+        df_sum <- df %>% filter(country != "Mainland China" & date ==max(date)) %>% group_by(country) %>% summarise(n=sum(cases)) %>% arrange(-n)
         df_sum <- df_sum  %>% mutate(country=fct_reorder(country, n, .desc=TRUE))
-        df_sum %>% ggplot(aes(x=country,y=n, fill =n, height = "150%" )) + 
+        df_sum %>% ggplot(aes(x=country,y=n, fill =n, height = "200%" )) + 
             geom_col() + 
             theme_minimal() + 
             theme(legend.position = "none",text = element_text(size=20), plot.title = element_text( hjust=0.5, vjust = -1)) +
@@ -377,11 +426,11 @@ server <- function(input, output, session) {
     
     output$map <- renderLeaflet({
         
-        dfmap <- dflight() %>% filter(type=="confirmed") 
-        dfmap$radius <- as.numeric(cut(dfmap$cases, breaks =c(-Inf,4,16,64,128,256,512,1024,2048,4096,8192,16384,32768,Inf)))
+        dfmap <- df %>% filter(type=="confirmed",date==max(date)) 
+        dfmap$radius <- as.numeric(cut(dfmap$cases, breaks =c(-Inf,4,16,64,128,256,512,1024,2048,4096,Inf)))
         dfmap[dfmap$state== "Diamond Princess cruise ship",][3] <- 35.4498
         dfmap[dfmap$state== "Diamond Princess cruise ship",][4] <- 139.6649
-        # labels = c("<4", "4-16", "16-64", "64-128","128-256","256-512","512-1024","1024-2048","2048-4096", "> 4096" )
+        labels = c("<4", "4-16", "16-64", "64-128","128-256","256-512","512-1024","1024-2048","2048-4096", "> 4096" )
         m <- leaflet(dfmap) %>%
             addTiles(
                 urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
@@ -405,24 +454,23 @@ server <- function(input, output, session) {
         
         # Plot
         
-        summary <- df() %>% filter(type =="confirmed") %>%  group_by(date) %>% summarise(n=sum(cases))
+        summary <- df %>% filter(type =="confirmed") %>%  group_by(date) %>% summarise(n=sum(cases)) %>% print(n=30)
         summary %>% ggplot(aes(x=date, y=n)) +
             geom_smooth(method = "loess",color='red', size =2) +
             geom_point(size=8, color='red')+theme_minimal() +
             theme(legend.position = "none", axis.title.x = element_blank(), text = element_text(size=20), plot.title = element_text( hjust=0.5, vjust = -1)) + 
             labs(
-                caption= "www.dataatomic.com",
+                caption= "   www.dataatomic.com",
                 y = "Number of infected people",
-                title = "Global Cases") + expand_limits(x = Sys.Date()+2)
+                title = "Global Cases")
         
     }) 
     
     output$df_wide <- renderDataTable({
-        dt <- df() %>% filter(type=="confirmed") %>% spread(date, cases)
+        dt <- df %>% filter(type=="confirmed") %>% spread(date, cases)
         datatable(dt, options = list(paging = TRUE), height='400px') 
         
     }) 
-    
     output$wflow <- renderImage({
         return(list(src = "ai2.jpg",contentType = "image/png",alt = "Alignment"))
     }, deleteFile = FALSE)
@@ -434,8 +482,6 @@ server <- function(input, output, session) {
         },
         contentType = "text/csv"
     )
-    Sys.sleep(1.6)
-    waiter_hide()
 }
 shinyApp(ui = ui, server = server)
 
