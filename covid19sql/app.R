@@ -2,7 +2,7 @@
 # Connect
 config <- yaml::read_yaml("/etc/skconfig")  
 connect <- function(){
-  pool::dbPool(
+  con <- pool::dbPool(
   RPostgres::Postgres(),
   host = config$database$host,
   user = config$database$user,
@@ -10,6 +10,7 @@ connect <- function(){
   dbname = config$database$name,
   port = 25060)
 }
+
 
 
 ###################################
@@ -231,13 +232,12 @@ ui <- dashboardPage( header, sidebar, body, skin= "blue")
 
 # create the server functions for the dashboard  
 server <- function(input, output, session) { 
- 
+  con <- connect()
  
   ####
   df <- reactivePoll(3600000,session, 
                  checkFunc = function(){ 
-                  con <- connect()
-                  log <- DBI::dbGetQuery(con, "SELECT MAX(last_updated) FROM log;")},
+                 log <- DBI::dbGetQuery(con, "SELECT MAX(last_updated) FROM log;")},
                  valueFunc = function() {
                    df <- DBI::dbReadTable(con, "jhu")
                    })
