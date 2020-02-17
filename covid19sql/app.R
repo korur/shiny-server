@@ -1,10 +1,8 @@
 # With auto updates from the database
 # Connect
-
-connect <- function(){
-  
 config <- yaml::read_yaml("/etc/skconfig")  
-pool::dbPool(
+connect <- function(){
+  pool::dbPool(
   RPostgres::Postgres(),
   host = config$database$host,
   user = config$database$user,
@@ -31,6 +29,8 @@ library(leaflet)
 library(DT)
 library(countup)
 library(waiter)
+library(DBI)
+library(pool)
 
 
 ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
