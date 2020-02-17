@@ -1,15 +1,17 @@
 # With auto updates from the database
 # Connect
-config <- yaml::read_yaml("/etc/skconfig")  
-connect <- function(){
-  con <- pool::dbPool(
+config <- yaml::read_yaml("/etc/skconfig")   
+
+con <- pool::dbPool(
+
   RPostgres::Postgres(),
-  host = config$database$host,
-  user = config$database$user,
-  password = config$database$password,
-  dbname = config$database$name,
-  port = 25060)
-}
+host = config$database$host,
+user = config$database$user,
+password = config$database$password,
+dbname = config$database$name,
+port = 25060) 
+
+
 
 
 
@@ -232,8 +234,7 @@ ui <- dashboardPage( header, sidebar, body, skin= "blue")
 
 # create the server functions for the dashboard  
 server <- function(input, output, session) { 
-  con <- connect()
- 
+  
   ####
   df <- reactivePoll(3600000,session, 
                  checkFunc = function(){ 
