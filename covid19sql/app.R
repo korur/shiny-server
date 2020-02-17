@@ -383,7 +383,7 @@ server <- function(input, output, session) {
         
         # Plot
         
-        summary <- df %>% filter(type =="confirmed") %>%  group_by(date) %>% summarise(n=sum(cases)) %>% print(n=30)
+        summary <- df() %>% filter(type =="confirmed") %>%  group_by(date) %>% summarise(n=sum(cases)) %>% print(n=30)
         summary %>% ggplot(aes(x=date, y=n)) +
             geom_smooth(method = "loess",color='red', size =2) +
             geom_point(size=8, color='red')+theme_minimal() +
@@ -396,7 +396,7 @@ server <- function(input, output, session) {
     }) 
     
     output$df_wide <- renderDataTable({
-        dt <- df %>% filter(type=="confirmed") %>% spread(date, cases)
+        dt <- df() %>% filter(type=="confirmed") %>% spread(date, cases)
         datatable(dt, options = list(paging = TRUE), height='400px') 
         
     }) 
