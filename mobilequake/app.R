@@ -4,4 +4,4 @@
 
 pkgload::load_all()
 options( "golem.app.prod" = TRUE)
-shiny::shinyApp(ui = app_ui(), server = app_server)
+mobilequake::run_app() # add parameters here (if any)
