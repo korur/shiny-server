@@ -66,8 +66,7 @@ mod_plots_module_server <- function(input, output, session, dataset, time_window
                            radius = ~ifelse(mag < 4, 2, 5), # add ifs
                            popup = pop) %>% 
       leaflet::addLegend( "bottomright", pal = pallet,
-                          values = sort(qqq()$size),
-                          title = "Magnitude")
+                          values = sort(qqq()$size))
     return(map)
   })
   # Leaflet map output
