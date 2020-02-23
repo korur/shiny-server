@@ -1,6 +1,6 @@
 # With auto updates from the database
 # Connect
- config <- yaml::read_yaml("/etc/skconfig")   # for digitalocean ubuntu 
+config <- yaml::read_yaml("/etc/skconfig")   # for digitalocean ubuntu 
 # config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml") # local computer
 con <- pool::dbPool(
 
@@ -37,7 +37,7 @@ library(pool)
 
 
 ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
-          "Philippines", "Hong Kong", "Malaysia", "Macau", "Tibet")
+          "Philippines", "Hong Kong", "Malaysia", "Macau", "Tibet", "Iran")
 America <- c("US", "Canada", "United States of America")
 EU <- c("France", "UK", "Germany", "Italy", 
         "Finland", "Sweden", "Spain" , "Norway", "Belgium")
@@ -326,7 +326,7 @@ server <- function(input, output, session) {
                  ,color = "red")  
     })
     output$rate <- renderValueBox({
-        valueBox( value = tags$p( round((dflight() %>% filter(type=="death") %>% select(cases) %>% sum())/(df() %>% filter(type!="death" & date==max(date)) %>% select(cases) %>% sum()) *100,1), style = "font-size: 70%;"),
+        valueBox( value = tags$p( round((dflight() %>% filter(type=="death") %>% select(cases) %>% sum())/(df() %>% filter(type =="confirmed" & date==max(date)) %>% select(cases) %>% sum()) *100,1), style = "font-size: 70%;"),
                   subtitle = tags$p("Death rate", style = "font-size: 100%;")
                   ,icon = icon('percent')
                   ,color = "red")  
