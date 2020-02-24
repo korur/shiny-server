@@ -58,15 +58,18 @@ mod_plots_module_server <- function(input, output, session, dataset, time_window
     map <- leaflet::leaflet(qqq(), options = leaflet::leafletOptions(minZoom = 2)) %>% 
       
       leaflet::addProviderTiles(leaflet::providers$CartoDB.DarkMatter) %>%
-      leaflet::setView(100.65, 120.0285, zoom = 1) %>%
-      leaflet::setView(24, 10, zoom=2) %>%
       leaflet::addCircles( ~longitude, ~latitude,  
                            weight= ~ifelse(mag < 4, 1, 6),
                            color= ~pallet(size),
                            radius = ~ifelse(mag < 4, 2, 5), # add ifs
                            popup = pop) %>% 
       leaflet::addLegend( "bottomright", pal = pallet,
-                          values = sort(qqq()$size))
+                          values = sort(qqq()$size)) %>% 
+      leaflet::setView(lng = 70, lat = 15, zoom = 1) %>%
+      leaflet::setMaxBounds( lng1 = -180 + .25, 
+                             lat1 = -90 + .25, 
+                             lng2 = 180 - .25, 
+                             lat2 = 90 - .25) 
     return(map)
   })
   # Leaflet map output
