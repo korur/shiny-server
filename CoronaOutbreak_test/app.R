@@ -44,12 +44,6 @@ EU <- c("France", "UK", "Germany", "Italy",
         "Finland", "Sweden", "Spain" , "Norway", "Belgium")
 
 
-#' @import shiny
-golem_add_external_resources <- function(){
-  
-  addResourcePath(
-    'www', system.file('app/www', package = 'mobilequake')
-  )
   
   tags$head(
     golem::activate_js(),
@@ -69,7 +63,7 @@ golem_add_external_resources <- function(){
     # Or for example, you can add shinyalert::useShinyalert() here
     #tags$link(rel="stylesheet", type="text/css", href="www/custom.css")
   )
-}
+
 
 
 ###################################
