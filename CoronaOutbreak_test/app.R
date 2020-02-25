@@ -12,7 +12,13 @@ dbname = config$database$name,
 port = 25060) 
 
 
-
+share <- list(
+  title = "Coronavirus Tracker",
+  url = "https://tools.dataatomic.com/siny/CoronaOutbreak_test/",
+  image = "https://tools.dataatomic.com/siny/CoronaOutbreak_test/img/virus2.png/",
+  description = "Track global Coronavirus cases",
+  twitter_user = "dataatomic"
+)
 
 
 ###################################
@@ -139,7 +145,14 @@ body <- dashboardBody(  tags$head(golem::activate_js(),
      
      gtag('config', 'UA-148414815-3');
      </script>"
-  ) 
+  ),
+  tags$link(rel = "shortcut icon", type="image/x-icon", href="http://tools.dataatomic.com/shiny/img/favicon.ico"),
+  # Facebook OpenGraph tags
+  tags$meta(property = "og:title", content = share$title),
+  tags$meta(property = "og:type", content = "website"),
+  tags$meta(property = "og:url", content = share$url),
+  tags$meta(property = "og:image", content = share$image),
+  tags$meta(property = "og:description", content = share$description)
 ),
   use_waiter(), # dependencies
   waiter_show_on_load(spin_3circles(), color = "#ffffff"),
