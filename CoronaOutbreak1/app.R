@@ -1,7 +1,7 @@
 # With auto updates from the database
 # Connect
-config <- yaml::read_yaml("/etc/skconfig")   # for digitalocean ubuntu 
-# config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml") # local computer
+#config <- yaml::read_yaml("/etc/skconfig")   # for digitalocean ubuntu 
+ config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml") # local computer
 con <- pool::dbPool(
 
   RPostgres::Postgres(),
@@ -12,13 +12,7 @@ dbname = config$database$name,
 port = 25060) 
 
 
-share <- list(
-  title = "Coronavirus Tracker",
-  url = "http://tools.dataatomic.com/shiny/CoronaOutbreak_test/",
-  image = "http://tools.dataatomic.com/shiny/img/virus.png/",
-  description = "Track global Coronavirus cases",
-  twitter_user = "dataatomic"
-)
+
 
 
 ###################################
@@ -143,16 +137,9 @@ body <- dashboardBody(  tags$head(golem::activate_js(),
      function gtag(){dataLayer.push(arguments);}
      gtag('js', new Date());
      
-     gtag('config', 'UA-14841481  5-3');
+     gtag('config', 'UA-148414815-3');
      </script>"
-  ),
-  tags$link(rel = "shortcut icon", type="image/x-icon", href="http://tools.dataatomic.com/shiny/CoronaOutbreak_test/favicon.ico"),
-  # Facebook OpenGraph tags
-  tags$meta(property = "og:title", content = share$title),
-  tags$meta(property = "og:type", content = "website"),
-  tags$meta(property = "og:url", content = share$url),
-  tags$meta(property = "og:image", content = share$image),
-  tags$meta(property = "og:description", content = share$description)
+  ) 
 ),
   use_waiter(), # dependencies
   waiter_show_on_load(spin_3circles(), color = "#ffffff"),
