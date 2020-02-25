@@ -4,13 +4,15 @@
 #' @import echarts4r
 #' @import shinyscroll
 #' @import waiter
-#' @import sever
+#' @import dplyr
+
+
 
 url <- ("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.csv")
 quake_df <- readr::read_csv(url, col_types = readr::cols())
 quake_df <- quake_df %>% filter(!is.na(quake_df$mag))
 quake_df$size <- cut(quake_df$mag,breaks = c(-Inf, 3.9, 4.9, 5.9, 6.9, 7.9, Inf),
-                     labels=c("minor", "light", "moderate", "strong", "major", "great 8+"))
+               labels=c("minor", "light", "moderate", "strong", "major", "great 8+"))
 current_time <- as.POSIXlt(Sys.time(), tz = "UTC")
 
 loader <- tagList(
@@ -20,6 +22,8 @@ loader <- tagList(
 )
 
 app_ui <- function() {
+  version <- paste0("v", packageVersion("mobilequake"))
+  
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
@@ -42,7 +46,7 @@ app_ui <- function() {
           shadow = TRUE,
           left_panel = TRUE,
           right_panel = FALSE
-        ), 
+        ),
         f7Panel(
           title = "About", 
           side = "left", 
@@ -54,6 +58,7 @@ app_ui <- function() {
           f7Link(label = "USGS", src = "https://earthquake.usgs.gov/", external = TRUE),
           f7Link(label = "Coronavirus Tracker", src = "http://tools.dataatomic.com/shiny/CoronaOutbreak/", external = TRUE)
         ),
+        
         f7Card(mod_input_module_ui("input_module_ui_1")),
         mod_plots_module_ui("plots_module_ui_1")
       ))

@@ -55,7 +55,7 @@ mod_plots_module_server <- function(input, output, session, dataset, time_window
     pallet <- leaflet::colorFactor(col_rainbow, qqq()$size)
     
     # Create the map
-    map <- leaflet::leaflet(qqq(), options = leaflet::leafletOptions(minZoom = 2)) %>% 
+    map <- leaflet::leaflet(qqq(), options = leaflet::leafletOptions(minZoom = 1)) %>% 
       
       leaflet::addProviderTiles(leaflet::providers$CartoDB.DarkMatter) %>%
       leaflet::addCircles( ~longitude, ~latitude,  
@@ -66,10 +66,10 @@ mod_plots_module_server <- function(input, output, session, dataset, time_window
       leaflet::addLegend( "bottomright", pal = pallet,
                           values = sort(qqq()$size)) %>% 
       leaflet::setView(lng = 70, lat = 15, zoom = 1) %>%
-      leaflet::setMaxBounds( lng1 = -180 + .25, 
-                             lat1 = -90 + .25, 
-                             lng2 = 180 - .25, 
-                             lat2 = 90 - .25) 
+      leaflet::setMaxBounds( lng1 = -180 + .05, 
+                             lat1 = -90 + .05, 
+                             lng2 = 180 - .05, 
+                             lat2 = 90 - .05) 
     return(map)
   })
   # Leaflet map output
