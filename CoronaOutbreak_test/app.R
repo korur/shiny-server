@@ -34,6 +34,7 @@ library(countup)
 library(waiter)
 library(DBI)
 library(pool)
+library(golem)
 
 
 
@@ -128,7 +129,7 @@ sidebar <- dashboardSidebar(
 
 
 # combine the two fluid rows to make the body
-body <- dashboardBody(  tags$head(
+body <- dashboardBody(  tags$head(golem::activate_js(),
   HTML("<!-- Global site tag (gtag.js) - Google Analytics -->
        <script async src='https://www.googletagmanager.com/gtag/js?id=UA-148414815-3'></script>
        <script>
