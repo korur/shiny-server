@@ -45,22 +45,6 @@ EU <- c("France", "UK", "Germany", "Italy",
 
 
   
-  tags$head(
-    HTML("<!-- Global site tag (gtag.js) - Google Analytics -->
-       <script async src='https://www.googletagmanager.com/gtag/js?id=UA-148414815-3'></script>
-       <script>
-       window.dataLayer = window.dataLayer || [];
-     function gtag(){dataLayer.push(arguments);}
-     gtag('js', new Date());
-     
-     gtag('config', 'UA-148414815-3');
-     </script>"
-    ) 
-    # Add here all the external resources
-    # If you have a custom.css in the inst/app/www
-    # Or for example, you can add shinyalert::useShinyalert() here
-    #tags$link(rel="stylesheet", type="text/css", href="www/custom.css")
-  )
 
 
 
@@ -144,7 +128,18 @@ sidebar <- dashboardSidebar(
 
 
 # combine the two fluid rows to make the body
-body <- dashboardBody( 
+body <- dashboardBody(  tags$head(
+  HTML("<!-- Global site tag (gtag.js) - Google Analytics -->
+       <script async src='https://www.googletagmanager.com/gtag/js?id=UA-148414815-3'></script>
+       <script>
+       window.dataLayer = window.dataLayer || [];
+     function gtag(){dataLayer.push(arguments);}
+     gtag('js', new Date());
+     
+     gtag('config', 'UA-148414815-3');
+     </script>"
+  ) 
+),
   use_waiter(), # dependencies
   waiter_show_on_load(spin_3circles(), color = "#ffffff"),
   sever::use_sever(),
