@@ -34,6 +34,8 @@ library(countup)
 library(waiter)
 library(DBI)
 library(pool)
+library(golem)
+
 
 
 ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
@@ -42,6 +44,8 @@ America <- c("US", "Canada", "United States of America")
 EU <- c("France", "UK", "Germany", "Italy", 
         "Finland", "Sweden", "Spain" , "Norway", "Belgium")
 
+
+  
 
 
 
@@ -125,7 +129,18 @@ sidebar <- dashboardSidebar(
 
 
 # combine the two fluid rows to make the body
-body <- dashboardBody( 
+body <- dashboardBody(  tags$head(golem::activate_js(),
+  HTML("<!-- Global site tag (gtag.js) - Google Analytics -->
+       <script async src='https://www.googletagmanager.com/gtag/js?id=UA-148414815-3'></script>
+       <script>
+       window.dataLayer = window.dataLayer || [];
+     function gtag(){dataLayer.push(arguments);}
+     gtag('js', new Date());
+     
+     gtag('config', 'UA-148414815-3');
+     </script>"
+  ) 
+),
   use_waiter(), # dependencies
   waiter_show_on_load(spin_3circles(), color = "#ffffff"),
   sever::use_sever(),
@@ -439,4 +454,5 @@ server <- function(input, output, session) {
     waiter_hide()
 }
 shinyApp(ui = ui, server = server)
+
 
