@@ -6,19 +6,6 @@
 #' @import waiter
 #' @import dplyr
 
-# Tracking ID
-tags$head(
-  HTML("<!-- Global site tag (gtag.js) - Google Analytics -->
-       <script async src='https://www.googletagmanager.com/gtag/js?id=UA-148414815-3'></script>
-       <script>
-       window.dataLayer = window.dataLayer || [];
-     function gtag(){dataLayer.push(arguments);}
-     gtag('js', new Date());
-     
-     gtag('config', 'UA-148414815-3');
-     </script>"
-  ) 
-)
 
 url <- ("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.csv")
 quake_df <- readr::read_csv(url, col_types = readr::cols())
@@ -87,7 +74,17 @@ golem_add_external_resources <- function(){
   
   tags$head(
     golem::activate_js(),
-    golem::favicon()
+    golem::favicon(),
+    HTML("<!-- Global site tag (gtag.js) - Google Analytics -->
+       <script async src='https://www.googletagmanager.com/gtag/js?id=UA-148414815-3'></script>
+       <script>
+       window.dataLayer = window.dataLayer || [];
+     function gtag(){dataLayer.push(arguments);}
+     gtag('js', new Date());
+     
+     gtag('config', 'UA-148414815-3');
+     </script>"
+    ) 
     # Add here all the external resources
     # If you have a custom.css in the inst/app/www
     # Or for example, you can add shinyalert::useShinyalert() here
