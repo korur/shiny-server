@@ -34,7 +34,7 @@ library(countup)
 library(waiter)
 library(DBI)
 library(pool)
-library(golem)
+
 
 
 ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
@@ -46,8 +46,6 @@ EU <- c("France", "UK", "Germany", "Italy",
 
   
   tags$head(
-    golem::activate_js(),
-    golem::favicon(),
     HTML("<!-- Global site tag (gtag.js) - Google Analytics -->
        <script async src='https://www.googletagmanager.com/gtag/js?id=UA-148414815-3'></script>
        <script>
