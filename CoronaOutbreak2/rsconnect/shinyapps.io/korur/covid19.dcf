@@ -1,0 +1,12 @@
+name: covid19
+title: covid19
+username:
+account: korur
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1811813
+bundleId: 2800606
+url: https://korur.shinyapps.io/covid19/
+when: 1581679161.91056
+asMultiple: FALSE
+asStatic: FALSE
