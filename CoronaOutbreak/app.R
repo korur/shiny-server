@@ -48,7 +48,9 @@ ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South K
           "Philippines", "Hong Kong", "Malaysia", "Macau", "Tibet", "Iran")
 America <- c("US", "Canada", "United States of America")
 EU <- c("France", "UK", "Germany", "Italy", 
-        "Finland", "Sweden", "Spain" , "Norway", "Belgium")
+        "Finland", "Sweden", "Spain" , "Norway", "Belgium", 
+        "Greece", "Switzerland", "Austria", "Portugal", 
+        "Turkey", "Poland", "Croatia", "United Kingdom" )
 
 
   
