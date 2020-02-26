@@ -15,7 +15,7 @@ port = 25060)
 share <- list(
   title = "Coronavirus Tracker",
   url = "http://tools.dataatomic.com/shiny/CoronaOutbreak1/",
-  image = "http://tools.dataatomic.com/shiny/img/virus.png/",
+  image = "http://tools.dataatomic.com/shiny/img/virus.png",
   description = "Track global Coronavirus cases",
   twitter_user = "dataatomic"
 )
@@ -146,7 +146,7 @@ body <- dashboardBody(  tags$head(golem::activate_js(),
      gtag('config', 'UA-14841481  5-3');
      </script>"
   ),
-  tags$link(rel = "shortcut icon", type="image/x-icon", href="http://tools.dataatomic.com/shiny/CoronaOutbreak1/favicon.ico"),
+  tags$link(rel = "shortcut icon", type="image/x-icon", href="http://tools.dataatomic.com/shiny/img/favicon.ico"),
   # Facebook OpenGraph tags
   tags$meta(property = "og:title", content = share$title),
   tags$meta(property = "og:type", content = "website"),
