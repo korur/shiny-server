@@ -10,7 +10,7 @@ data$type = as.factor(data$type)
 data$study = as.factor(data$study)
 
 share <- list(
-  title = "Coronavirus Tracker",
+  title = "Genome Explorer",
   url = "http://https://tools.dataatomic.com/shiny/TCGA_dashboard_on_server/",
   image = "http://tools.dataatomic.com/shiny/img/tcga.png",
   description = "TCGA Genome Explorer",
