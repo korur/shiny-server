@@ -146,7 +146,7 @@ body <- dashboardBody(  tags$head(golem::activate_js(),
      gtag('config', 'UA-14841481  5-3');
      </script>"
   ),
-  tags$link(rel = "shortcut icon", type="image/x-icon", href="http://tools.dataatomic.com/shiny/img/favicon.ico"),
+  tags$link(rel = "shortcut icon", type="image/x-icon", href="http://tools.dataatomic.com/shiny/CoronaOutbreak1/favicon.ico"),
   # Facebook OpenGraph tags
   tags$meta(property = "og:title", content = share$title),
   tags$meta(property = "og:type", content = "website"),
