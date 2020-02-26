@@ -15,7 +15,7 @@ port = 25060)
 share <- list(
   title = "Coronavirus Tracker",
   url = "http://tools.dataatomic.com/shiny/CoronaOutbreak/",
-  image = "http://tools.dataatomic.com/shiny/img/virus.png/",
+  image = "http://tools.dataatomic.com/shiny/img/virus.png",
   description = "Track global Coronavirus cases",
   twitter_user = "dataatomic"
 )
