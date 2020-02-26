@@ -3,11 +3,19 @@ library(shinydashboard)
 library(tidyverse)
 library(DT)
 library(plotly)
+library(golem)
 
 data <- readRDS('mycalldataforTcgaApp_with_cancerclass.rds')
 data$type = as.factor(data$type)
 data$study = as.factor(data$study)
 
+share <- list(
+  title = "Coronavirus Tracker",
+  url = "http://https://tools.dataatomic.com/shiny/TCGA_dashboard_on_server/",
+  image = "http://tools.dataatomic.com/shiny/img/tcga.png",
+  description = "TCGA Genome Explorer",
+  twitter_user = "dataatomic"
+)
 # Shiny dashboard App
 
 header <- dashboardHeader(
@@ -49,7 +57,25 @@ sidebar <- dashboardSidebar(
 )
 
 # combine the two fluid rows to make the body
-body <- dashboardBody( 
+body <- dashboardBody(  tags$head(golem::activate_js(),
+                                  HTML("<!-- Global site tag (gtag.js) - Google Analytics -->
+       <script async src='https://www.googletagmanager.com/gtag/js?id=UA-148414815-3'></script>
+       <script>
+       window.dataLayer = window.dataLayer || [];
+     function gtag(){dataLayer.push(arguments);}
+     gtag('js', new Date());
+     
+     gtag('config', 'UA-14841481  5-3');
+     </script>"
+                      ),
+                                  tags$link(rel = "shortcut icon", type="image/x-icon", href="http://tools.dataatomic.com/shiny/img/favicon.ico"),
+                                  # Facebook OpenGraph tags
+                                  tags$meta(property = "og:title", content = share$title),
+                                  tags$meta(property = "og:type", content = "website"),
+                                  tags$meta(property = "og:url", content = share$url),
+                                  tags$meta(property = "og:image", content = share$image),
+                                  tags$meta(property = "og:description", content = share$description)),
+  
     tabItems(
         tabItem("dashboard",
                 
