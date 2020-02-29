@@ -1,7 +1,7 @@
 # With auto updates from the database
 # Connect
-config <- yaml::read_yaml("/etc/skconfig")   # for digitalocean ubuntu 
-# config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml") # local computer
+#config <- yaml::read_yaml("/etc/skconfig")   # for digitalocean ubuntu 
+ config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml") # local computer
 con <- pool::dbPool(
 
   RPostgres::Postgres(),
@@ -50,7 +50,9 @@ America <- c("US", "Canada", "United States of America")
 EU <- c("France", "UK", "Germany", "Italy", 
         "Finland", "Sweden", "Spain" , "Norway", "Belgium", 
         "Greece", "Switzerland", "Austria", "Portugal", 
-        "Turkey", "Poland", "Croatia", "United Kingdom" )
+        "Turkey", "Poland", "Croatia", "United Kingdom", "Estonia", "Belarus", 
+        "Monaco", "North Macedonia", "San Marino", "Iceland", "Lithuania",
+        "Romania", "Hungary", "Netherlands" )
 
 
   
