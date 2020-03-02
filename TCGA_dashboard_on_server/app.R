@@ -4,10 +4,13 @@ library(tidyverse)
 library(DT)
 library(plotly)
 library(golem)
+library(shinyMobile)
 
 data <- readRDS('mycalldataforTcgaApp_with_cancerclass.rds')
 data$type = as.factor(data$type)
 data$study = as.factor(data$study)
+
+# preparation of news
 
 share <- list(
   title = "Genome Explorer",
@@ -52,6 +55,10 @@ sidebar <- dashboardSidebar(
                  menuSubItem(text= "Medium", href = "https://medium.com/@serdarkorur"),
                  menuSubItem(text= "Linkedin", href = "https://www.linkedin.com/in/serdar-korur/"),
                  menuSubItem(text= "Github", href = "https://github.com/korur")
+        )
+        ,
+        menuItem("Latest publications", icon =icon("database"),
+                 tabName = "tcga"
         )
     )
 )
@@ -109,7 +116,10 @@ tabItem("Rawdata",
 tabItem("workflow", width =6,
         verbatimTextOutput("Workflow"),
         imageOutput("wflow", width = "200%")
-) 
+),
+
+tabItem("tcga", width =6,
+        uiOutput("tcga")) 
 ) #tabitems
 ) #dash
 
@@ -122,6 +132,19 @@ ui <- dashboardPage(title = 'TCGA App Shiny dashboard', header, sidebar, body, s
 server <- function(input, output) { 
     #some data manipulation to derive the values of KPI boxes
     sum_frac_mut <- data %>% group_by(ID, study, type) %>% summarise(altered_gen = round(mean(FRACTION_GENOME_ALTERED),3), mutations = round(mean(MUTATION_COUNT),0)) 
+    
+    #news data prep
+    items <-reactive({
+      news <- newsapi::every_news("TCGA", results = 100, language = "en", sort = "popularity")
+      items <- news[news$url %in% unique(news$url),]
+    
+    })
+    
+    output$tcga <- renderUI({
+      tags$div(class = "header", id = NULL, NULL,"Coming soon" )
+      
+    })
+    
     #creating the valueBoxOutput content
     output$mean_mutations <- renderValueBox({
         valueBox(

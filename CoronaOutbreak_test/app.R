@@ -1,7 +1,12 @@
 # With auto updates from the database
 # Connect
-config <- yaml::read_yaml("/etc/skconfig")   # for digitalocean ubuntu 
-# config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml") # local computer
+# config <- yaml::read_yaml("/etc/skconfig")   # for digitalocean ubuntu 
+if (file.exists("~/workingdirectory/CoronaOutbreak/_coronavirus.yml")) { 
+config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml") 
+} else { 
+config <- yaml::read_yaml("/etc/skconfig") 
+} 
+
 con <- pool::dbPool(
   
   RPostgres::Postgres(),
@@ -44,11 +49,16 @@ library(golem)
 
 
 
+
 ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
           "Philippines", "Hong Kong", "Malaysia", "Macau", "Tibet", "Iran")
 America <- c("US", "Canada", "United States of America")
 EU <- c("France", "UK", "Germany", "Italy", 
-        "Finland", "Sweden", "Spain" , "Norway", "Belgium")
+        "Finland", "Sweden", "Spain" , "Norway", "Belgium", 
+        "Greece", "Switzerland", "Austria", "Portugal", 
+        "Turkey", "Poland", "Croatia", "United Kingdom", "Estonia", "Belarus", 
+        "Monaco", "North Macedonia", "San Marino", "Iceland", "Lithuania",
+        "Romania", "Hungary", "Netherlands" )
 
 
 
@@ -212,7 +222,7 @@ tabItems(
   #######        BOXES 2      #######
   ###################################
   tabItem("rawdata",
-          
+  
           box(
             width = "12"
             ,solidHeader = TRUE 
@@ -225,10 +235,11 @@ tabItems(
   
   tabItem("countries",
           
-          box(width = "12", height = "800px",
-              solidHeader = TRUE 
+          box(width = "12"
+              ,solidHeader = TRUE 
               ,collapsible = TRUE 
-              ,plotOutput("countries", height = '700px') 
+              ,column(width=6, DT::dataTableOutput("countries"), 
+                      style = "height:500px; overflow-y: scroll;overflow-x: scroll;") 
           ) #box 
           
   ),
@@ -387,21 +398,15 @@ server <- function(input, output, session) {
   #######                     #######
   ###################################
   
-  output$countries <- renderPlot({
+  output$countries <- renderDataTable({
     # Plot
-    df_sum <- dflight() %>% filter(country != "Mainland China") %>% group_by(country) %>% summarise(n=sum(cases)) %>% arrange(-n)
-    df_sum <- df_sum  %>% mutate(country=fct_reorder(country, n, .desc=TRUE))
-    df_sum %>% ggplot(aes(x=country,y=n, fill =n, height = "150%" )) + 
-      geom_col() + 
-      theme_minimal() + 
-      theme(legend.position = "none",text = element_text(size=20), plot.title = element_text( hjust=0.5, vjust = -1)) +
-      labs(
-        caption= "www.dataatomic.com",
-        x = "", 
-        y = "Number of cases",
-        title = "Cases Outside China") + 
-      coord_flip()
+    df_sum <- dflight() %>% filter(country != "Mainland China") %>% 
+      group_by(country) %>% 
+      summarise(cases=sum(cases)) %>% 
+      arrange(-cases)%>% 
+      mutate(country=fct_reorder(country, cases, .desc=TRUE))
     
+    datatable(df_sum[,1:2], options = list(paging = TRUE, pageLength = 65), height='400px')
   })
   
   output$map <- renderLeaflet({
