@@ -156,7 +156,7 @@ body <- dashboardBody(  tags$head(golem::activate_js(),
      function gtag(){dataLayer.push(arguments);}
      gtag('js', new Date());
      
-     gtag('config', 'UA-14841481  5-3');
+     gtag('config', 'UA-148414815-3');
      </script>"
                                   ),
                                   tags$link(rel = "shortcut icon", type="image/x-icon", href="http://tools.dataatomic.com/shiny/CoronaOutbreak_test/favicon.ico"),
