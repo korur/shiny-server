@@ -247,7 +247,7 @@ tabItems(
           
   ),
   tabItem("prediction", 
-          uiOutput("prediction")
+          HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/FeDqOKDzoVs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
           
           
   ) # tabItem
@@ -428,7 +428,7 @@ server <- function(input, output, session) {
   url <- a("youtube", href="https://www.youtube.com/embed/FeDqOKDzoVs")
   
   output$prediction <- renderUI({
-    tagList("View it on ", url)
+    HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/FeDqOKDzoVs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
   })
   ###################################
   #######                     #######
