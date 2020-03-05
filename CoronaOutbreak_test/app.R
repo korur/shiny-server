@@ -1,11 +1,14 @@
 # With auto updates from the database
 # Connect
 # config <- yaml::read_yaml("/etc/skconfig")   # for digitalocean ubuntu 
+
+# Connection script local or server
 if (file.exists("~/workingdirectory/CoronaOutbreak/_coronavirus.yml")) { 
-config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml") 
+  config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml") 
 } else { 
-config <- yaml::read_yaml("/etc/skconfig") 
+  config <- yaml::read_yaml("/etc/skconfig") 
 } 
+
 
 con <- pool::dbPool(
   
@@ -105,14 +108,14 @@ sidebar <- dashboardSidebar(
   
   sidebarMenu(
     menuItem("Dashboard", icon = icon("dashboard"),
-             tabName = "dashboard"
+             tabName = "dashboard" , badgeLabel   = "  map", badgeColor = "blue"
     ) ,
     menuItem("Cases Outside China", icon =icon("globe-americas"),
-             tabName = "countries"
+             tabName = "countries", badgeLabel   = "table", badgeColor = "blue"
     ),
     
-    menuItem("Simulations", icon = icon("chart-line"),
-             tabName = "prediction"
+    menuItem("Animation", icon = icon("chart-line"),
+             tabName = "prediction", badgeLabel   = "new", badgeColor = "green"
     ),
     menuItem("Download Data", icon = icon("table"),
              tabName = "rawdata"
@@ -153,7 +156,7 @@ body <- dashboardBody(  tags$head(golem::activate_js(),
      function gtag(){dataLayer.push(arguments);}
      gtag('js', new Date());
      
-     gtag('config', 'UA-14841481  5-3');
+     gtag('config', 'UA-148414815-3');
      </script>"
                                   ),
                                   tags$link(rel = "shortcut icon", type="image/x-icon", href="http://tools.dataatomic.com/shiny/CoronaOutbreak_test/favicon.ico"),
@@ -222,7 +225,7 @@ tabItems(
   #######        BOXES 2      #######
   ###################################
   tabItem("rawdata",
-  
+          
           box(
             width = "12"
             ,solidHeader = TRUE 
@@ -243,13 +246,11 @@ tabItems(
           ) #box 
           
   ),
-  tabItem("prediction",
-          box(
-            width = "12"
-            ,solidHeader = TRUE 
-            ,collapsible = TRUE 
-            ,verbatimTextOutput("prediction") , imageOutput("wflow", width = "100%")
-          ) #box 
+  tabItem("prediction", 
+          HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/FeDqOKDzoVs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
+          
+          
+          
           
   ) # tabItem
 )# fluidrow
@@ -413,7 +414,7 @@ server <- function(input, output, session) {
     
     dfmap <- dflight() %>% filter(type=="confirmed") 
     dfmap$radius <- as.numeric(cut(dfmap$cases, breaks =c(-Inf,4,16,64,128,256,512,1024,2048,4096,8192,16384,32768,Inf)))
-    dfmap[dfmap$state== "Diamond Princess cruise ship",][3] <- 35.4498
+    dfmap[dfmap$state== "Diamond Princess cruise ship",][3] <- 35.4498 
     dfmap[dfmap$state== "Diamond Princess cruise ship",][4] <- 139.6649
     # labels = c("<4", "4-16", "16-64", "64-128","128-256","256-512","512-1024","1024-2048","2048-4096", "> 4096" )
     m <- leaflet(dfmap) %>%
@@ -423,11 +424,12 @@ server <- function(input, output, session) {
       addProviderTiles(providers$Stamen.TonerLite) %>% 
       addCircleMarkers(lng=dfmap$lon, lat=dfmap$lat, radius = 3* dfmap$radius, color = "red") %>% 
       addMarkers(dfmap$lon, dfmap$lat,  popup =   paste("<h4>","<b>", dfmap$state, "</b>", "<br>", dfmap$cases, "case/s","</h4>")) %>% 
-      setView(lng = 125, lat = 25, zoom = 4)
+      setView(lng = 15, lat = 47, zoom = 4)
   })
   
-  output$prediction <- renderText({
-    "Coming Soon"
+  output$prediction <- renderUI({
+    HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/FeDqOKDzoVs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
+    
   })
   ###################################
   #######                     #######

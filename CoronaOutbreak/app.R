@@ -247,7 +247,7 @@ tabItems(
           
   ),
   tabItem("prediction",
-          HTML('<iframe width="900" height="600" src="https://www.youtube.com/embed/FeDqOKDzoVs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
+          HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/FeDqOKDzoVs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
           
           
           
