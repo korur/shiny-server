@@ -247,8 +247,7 @@ tabItems(
           
   ),
   tabItem("prediction", 
-          HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/FeDqOKDzoVs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
-          
+          uiOutput("prediction")
           
           
           
@@ -426,10 +425,11 @@ server <- function(input, output, session) {
       addMarkers(dfmap$lon, dfmap$lat,  popup =   paste("<h4>","<b>", dfmap$state, "</b>", "<br>", dfmap$cases, "case/s","</h4>")) %>% 
       setView(lng = 15, lat = 47, zoom = 4)
   })
+
+  url <- a("youtube", href="https://www.youtube.com/embed/FeDqOKDzoVs")
   
   output$prediction <- renderUI({
-    HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/FeDqOKDzoVs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
-    
+    tagList("View it on ", url)
   })
   ###################################
   #######                     #######
