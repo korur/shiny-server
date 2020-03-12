@@ -53,7 +53,7 @@ library(golem)
 
 
 
-ASIA <- c("Hong Kong","Japan", "Macau", "Mainland China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
+ASIA <- c("Hong Kong","Japan", "Macau", "China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
           "Philippines", "Hong Kong", "Malaysia", "Macau", "Tibet", "Iran")
 America <- c("US", "Canada", "United States of America")
 EU <- c("France", "UK", "Germany", "Italy", 
@@ -61,7 +61,7 @@ EU <- c("France", "UK", "Germany", "Italy",
         "Greece", "Switzerland", "Austria", "Portugal", 
         "Turkey", "Poland", "Croatia", "United Kingdom", "Estonia", "Belarus", 
         "Monaco", "North Macedonia", "San Marino", "Iceland", "Lithuania",
-        "Romania", "Hungary", "Netherlands" )
+        "Romania", "Hungary", "Netherlands", "Serbia,", "Czechia", "Ireland", "Slovenia")
 
 
 
@@ -127,7 +127,7 @@ sidebar <- dashboardSidebar(
              menuSubItem(text= "NHCPRC", href = "http://www.nhc.gov.cn/yjb/s3578/new_list.shtml"),
              menuSubItem(text= "DXC", href = "https://3g.dxy.cn/newh5/view/pneumonia?scene=2&clicktime=1579582238&enterid=1579582238&from=singlemessage&isappinstalled=0"),
              menuSubItem(text= "ECDC", href = "https://www.ecdc.europa.eu/en/geographical-distribution-2019-ncov-cases"),
-             menuSubItem(text= "JHU", href = "https://docs.google.com/spreadsheets/d/1yZv9w9zRKwrGTaR-YzmAqMefw4wMlaXocejdxZaTs6w/htmlview?usp=sharing&sle=true")),
+             menuSubItem(text= "JHU", href = "https://docs.google.com/spreadsheets/d/1yZv9w9zRKwrGTaR-YzmAqMefw4wMlaXocejdxZaTs6w/htmlview?usp=sharing&sle=true") ),
     
     menuItem("Contact Us",  icon =icon("paper-plane"),
              tabName = "My Website",
@@ -326,7 +326,7 @@ server <- function(input, output, session) {
   })
   output$numchina <- renderValueBox({
     valueBox(
-      value = tags$p(countup(dflight() %>% filter(country == "Mainland China" & type=="confirmed") %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
+      value = tags$p(countup(dflight() %>% filter(country == "China" & type=="confirmed") %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
       subtitle = tags$p("China", style = "font-size: 100%;")
       ,icon = icon('procedures')
       ,color = "red")  
@@ -343,9 +343,9 @@ server <- function(input, output, session) {
   
   output$numus <- renderValueBox({
     valueBox( 
-      value = tags$p( countup(dflight() %>% filter(country %in% America & type=="confirmed") %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
-      subtitle = tags$p("AMERICA", style = "font-size: 100%;")
-      , "AMERICA"
+      value = tags$p( countup(dflight() %>% filter(country %in% c("US","United States of America") & type=="confirmed") %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
+      subtitle = tags$p("USA", style = "font-size: 100%;")
+      , "USA"
       ,icon = icon("procedures")
       ,color = "red")  
   })
@@ -399,7 +399,7 @@ server <- function(input, output, session) {
   
   output$countries <- renderDataTable({
     # Plot
-    df_sum <- dflight() %>% filter(country != "Mainland China") %>% 
+    df_sum <- dflight() %>% filter(country != "China", type == "confirmed") %>% 
       group_by(country) %>% 
       summarise(cases=sum(cases)) %>% 
       arrange(-cases)%>% 

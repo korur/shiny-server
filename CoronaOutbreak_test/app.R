@@ -4,9 +4,9 @@
 
 # Connection script local or server
 if (file.exists("~/workingdirectory/CoronaOutbreak/_coronavirus.yml")) { 
-  config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml") 
+config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml") 
 } else { 
-  config <- yaml::read_yaml("/etc/skconfig") 
+config <- yaml::read_yaml("/etc/skconfig") 
 } 
 
 
@@ -225,7 +225,7 @@ tabItems(
   #######        BOXES 2      #######
   ###################################
   tabItem("rawdata",
-          
+  
           box(
             width = "12"
             ,solidHeader = TRUE 
@@ -238,17 +238,16 @@ tabItems(
   
   tabItem("countries",
           
-          box(width = "12"
+          box(width = "6"
               ,solidHeader = TRUE 
               ,collapsible = TRUE 
-              ,column(width=6, DT::dataTableOutput("countries"), 
+              ,column(width=12, DT::dataTableOutput("countries"), 
                       style = "height:500px; overflow-y: scroll;overflow-x: scroll;") 
           ) #box 
           
   ),
   tabItem("prediction", 
-          uiOutput("prediction")
-          
+          HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/FeDqOKDzoVs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
           
           
   ) # tabItem
@@ -425,11 +424,11 @@ server <- function(input, output, session) {
       addMarkers(dfmap$lon, dfmap$lat,  popup =   paste("<h4>","<b>", dfmap$state, "</b>", "<br>", dfmap$cases, "case/s","</h4>")) %>% 
       setView(lng = 15, lat = 47, zoom = 4)
   })
-
+  
   url <- a("youtube", href="https://www.youtube.com/embed/FeDqOKDzoVs")
   
   output$prediction <- renderUI({
-    tagList("View it on ", url)
+    HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/FeDqOKDzoVs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
   })
   ###################################
   #######                     #######
@@ -453,9 +452,11 @@ server <- function(input, output, session) {
     
   }) 
   
-  output$df_wide <- renderDataTable({
+  dt <- reactive({
     dt <- df() %>% filter(type=="confirmed") %>% spread(date, cases)
-    datatable(dt, options = list(paging = TRUE), height='400px') 
+  })
+  output$df_wide <- renderDataTable({
+    datatable(dt(), options = list(paging = TRUE), height='400px') 
     
   }) 
   
@@ -466,7 +467,7 @@ server <- function(input, output, session) {
   output$downloadCsv <- downloadHandler(
     filename = "coronavirusdata.csv",
     content = function(file) {
-      write.csv(df_wide, file)
+      write.csv(dt(), file)
     },
     contentType = "text/csv"
   )
