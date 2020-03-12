@@ -343,7 +343,7 @@ server <- function(input, output, session) {
   
   output$numus <- renderValueBox({
     valueBox( 
-      value = tags$p( countup(dflight() %>% filter(country %in% c("US","United States of America") & type=="confirmed") %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
+      value = tags$p( countup(dflight() %>% filter(country == "US" & type=="confirmed") %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
       subtitle = tags$p("USA", style = "font-size: 100%;")
       , "USA"
       ,icon = icon("procedures")
@@ -412,8 +412,6 @@ server <- function(input, output, session) {
     
     dfmap <- dflight() %>% filter(type=="confirmed") 
     dfmap$radius <- as.numeric(cut(dfmap$cases, breaks =c(-Inf,4,16,64,128,256,512,1024,2048,4096,8192,16384,32768,Inf)))
-    dfmap[dfmap$state== "Diamond Princess cruise ship",][3] <- 35.4498 
-    dfmap[dfmap$state== "Diamond Princess cruise ship",][4] <- 139.6649
     # labels = c("<4", "4-16", "16-64", "64-128","128-256","256-512","512-1024","1024-2048","2048-4096", "> 4096" )
     m <- leaflet(dfmap) %>%
       addTiles(
