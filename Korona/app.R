@@ -12,18 +12,7 @@ toplam_vaka <- read_excel("data/vaka_sayisi_tur.xlsx")
 toplam_vaka_p <- toplam_vaka %>%  gather("tip", "hasta", -c("ulke","gun","tarih"))
 toplam_vaka_p <- toplam_vaka_p %>% filter(tip != "aktif")
 
-# Tracking ID
-tags$head(
-  HTML("<!-- Global site tag (gtag.js) - Google Analytics -->
-       <script async src='https://www.googletagmanager.com/gtag/js?id=UA-148414815-3'></script>
-       <script>
-       window.dataLayer = window.dataLayer || [];
-     function gtag(){dataLayer.push(arguments);}
-     gtag('js', new Date());
-     
-     gtag('config', 'UA-148414815-3');
-     </script>"
-  ))
+
 # data preparation and functions
 
 loader <- tagList(
@@ -34,6 +23,18 @@ loader <- tagList(
 
 ui <- function() {
   f7Page(
+    # Tracking ID
+    tags$head(
+      HTML("<!-- Global site tag (gtag.js) - Google Analytics -->
+       <script async src='https://www.googletagmanager.com/gtag/js?id=UA-148414815-3'></script>
+       <script>
+       window.dataLayer = window.dataLayer || [];
+     function gtag(){dataLayer.push(arguments);}
+     gtag('js', new Date());
+     
+     gtag('config', 'UA-148414815-3');
+     </script>"
+      )),
     shinyscroll::use_shinyscroll(),
     sever::use_sever(),
     waiter::use_waiter(), # dependencies
