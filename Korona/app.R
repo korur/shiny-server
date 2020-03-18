@@ -59,7 +59,7 @@ ui <- function() {
         theme = "dark",
         effect = "cover",
         p("Saglik Bakanligi verilerine gore en son Koronavirus anlik hasta ve olen sayilari"),
-        f7Link(label = "Yazar", src = "https://dataatomic.com", external = TRUE),
+        f7Link(label = "www.dataatomic.com", src = "https://dataatomic.com", external = TRUE),
         f7Link(label = "TSB", src = "https://www.saglik.gov.tr/", external = TRUE),
         f7Link(label = "Dunya'da Koronavirus Vakalari", src = "http://tools.dataatomic.com/shiny/CoronaOutbreak/", external = TRUE)
       ),
@@ -112,7 +112,7 @@ server <- function(input, output,session) {
                 top = 100,
                 z = 999,
                 style = list(
-                  image = "sk_mob_logo_black_extended.png", opacity=0.15
+                  image = "sk_mob_logo_black_extended.png", opacity=0.30
                 )
       ) 
     #nice themes chalk infographic purple-passion 
