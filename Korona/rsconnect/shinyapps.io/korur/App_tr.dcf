@@ -1,0 +1,12 @@
+name: App_tr
+title: App_tr
+username:
+account: korur
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1962655
+bundleId: 2895042
+url: https://korur.shinyapps.io/App_tr/
+when: 1584554603.59926
+asMultiple: FALSE
+asStatic: FALSE
