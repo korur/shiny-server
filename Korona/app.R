@@ -63,7 +63,7 @@ ui <- function() {
         f7Link(label = "TSB", src = "https://www.saglik.gov.tr/", external = TRUE),
         f7Link(label = "Dunya'da Koronavirus Vakalari", src = "http://tools.dataatomic.com/shiny/CoronaOutbreak/", external = TRUE)
       ),
-     f7Card(f7Row(echarts4rOutput("timeline")  ))))
+     f7Card(f7Col(echarts4rOutput("timeline")  ))))
   
 }
 server <- function(input, output,session) {
