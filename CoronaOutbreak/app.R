@@ -180,11 +180,10 @@ tabItems(
   tabItem("dashboard",
           
           fluidRow(
-            valueBoxOutput("numcases", width = 2)
-            ,valueBoxOutput("numchina", width = 2)
-            ,valueBoxOutput("numeu", width = 2)
-            ,valueBoxOutput("numus", width = 2)
-            , valueBoxOutput("up", width = 3)
+            valueBoxOutput("numcases", width = 3)
+            ,valueBoxOutput("numchina", width = 3)
+            ,valueBoxOutput("numeu", width = 3)
+            ,valueBoxOutput("numus", width = 3)
           ), #fluidrow
           
           ################################### 
@@ -192,10 +191,9 @@ tabItems(
           ###################################
           
           fluidRow(
-            valueBoxOutput("death", width = 2)
-            ,valueBoxOutput("recovered", width = 2)
-            ,valueBoxOutput("rate", width = 2)
-            ,valueBoxOutput("count", width = 2)
+            valueBoxOutput("death", width = 3)
+            ,valueBoxOutput("rate", width = 3)
+            ,valueBoxOutput("count", width = 3)
             ,valueBoxOutput("update", width = 3)
           ),
           
@@ -310,7 +308,7 @@ server <- function(input, output, session) {
     dflight <- df() %>% filter(date==max(date))   
   })
   
-  
+
   ###################################
   #######                     #######
   #######     VALUE BOXES     #######
@@ -370,26 +368,13 @@ server <- function(input, output, session) {
               ,color = "red")  
   })
   output$count <- renderValueBox({
-    valueBox(value = tags$p( countup(df() %>% distinct(country) %>% count() %>% pull), style = "font-size: 70%;"),
+    valueBox(value = tags$p( countup(df() %>% distinct(country) %>% dplyr::count() %>% pull), style = "font-size: 70%;"),
              subtitle = tags$p("Countries", style = "font-size: 100%;")
              ,icon = icon("flag")
              ,color = "red")  
   })
   
-  output$recovered<- renderValueBox({
-    valueBox( value = tags$p( countup(dflight() %>% filter(type=="recovered") %>% select(cases) %>% sum()), style = "font-size: 70%;"),
-              subtitle = tags$p("Recovered", style = "font-size: 100%;")
-              ,icon = icon("check-circle")
-              ,color = "green")  
-  })
-  output$up <- renderValueBox({
-    valueBox( value = tags$p("Outbreak", style = "font-size: 70%;"),
-              subtitle = tags$p("2019-nCoV", style = "font-size: 100%;")
-              ,icon = icon("procedures")
-              ,color = "blue") 
-    
-  })
-  
+
   
   ###################################
   #######                     #######
