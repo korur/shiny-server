@@ -49,35 +49,28 @@ as_date <- function(date){
 }
 
 # jhu data
-confirmed_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv"
-deaths_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv"
-recovered_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv"
+confirmed_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
+deaths_sheet <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
 # confirmed cases
 confirmed <- readr::read_csv(confirmed_sheet, col_types = readr::cols())
-
-# recovered cases
-recovered <- readr::read_csv(recovered_sheet, col_types = readr::cols())
 
 # deaths
 deaths <- readr::read_csv(deaths_sheet, col_types = readr::cols()) 
 
 # add col
 confirmed$type <- "confirmed"
-recovered$type <- "recovered"
 deaths$type <- "death"
 
 # rename
 confirmed <- rename_sheets(confirmed)
-recovered <- rename_sheets(recovered)
 deaths <- rename_sheets(deaths)  
 
 # pivot longer
 confirmed <- pivot(confirmed)
-recovered <- pivot(recovered)
 deaths <- pivot(deaths)    
 
 suppressWarnings({    
-  df <- dplyr::bind_rows(confirmed, recovered, deaths) %>% 
+  df <- dplyr::bind_rows(confirmed, deaths) %>% 
     dplyr::mutate(
       date = as_date(date),
       cases = trimws(cases),
