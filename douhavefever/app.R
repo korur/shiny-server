@@ -17,7 +17,7 @@ ccc = c('fever', 'cough', 'breath', 'home', "home2", 'work', 'lat', 'long', "use
 if (file.exists("~/workingdirectory/CoronaOutbreak/douhavefever/_firebase.yml")) { 
   config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/douhavefever/_firebase.yml") 
 } else { 
-  config <- yaml::read_yaml("etc/_firebase.yml")
+  config <- yaml::read_yaml("/etc/_firebase.yml")
 }
 
 # Create config
