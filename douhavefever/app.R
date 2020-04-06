@@ -181,11 +181,11 @@ f7Tab(
   icon = f7Icon("waveform", old = FALSE),
   active = FALSE,
   swipeable = TRUE,
-  f7Row(f7Col(h2("Toplam veri miktari", align="center"),
+  f7Row(f7Col(h2("Toplam veri", align="center"),
 f7Card(
   h2(countupOutput("dpsa"), style="text-align: center;")
         )), 
-f7Col(h2("Atesi olan", align="center"),
+f7Col(h2("Belirtisi olan", align="center"),
 f7Card(
   h2(
     countupOutput("fant"), style="text-align: center;"
