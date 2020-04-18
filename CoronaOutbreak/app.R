@@ -294,7 +294,7 @@ server <- function(input, output, session) {
     bg_color = "#000"
   )
   ####
-  df <- reactivePoll(3600000,session, 
+  df <- reactivePoll(360000,session, 
                      checkFunc = function(){ 
                        log <- DBI::dbGetQuery(con, "SELECT MAX(last_updated) FROM log;")},
                      valueFunc = function() {
