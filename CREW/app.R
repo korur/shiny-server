@@ -4,4 +4,4 @@
 
 pkgload::load_all()
 options( "golem.app.prod" = TRUE)
-CREW::run_app() # add parameters here (if any)
+shiny::runApp("app.R") # add parameters here (if any)
