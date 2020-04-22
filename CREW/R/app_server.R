@@ -5,8 +5,23 @@
 #' @import shiny
 #' @noRd
 app_server <- function( input, output, session, abcd = abcd()) {
-  # List the first level callModules here
-
+  ## sever
+  sever::sever(
+    tagList(
+      h1("Whoops!"),
+      p("It looks like you were disconnected"),
+      shiny::tags$button(
+        "Reload",
+        style = "color:#000;background-color:#fff;",
+        class = "button button-raised",
+        onClick = "location.reload();"
+      )
+    ),
+    bg_color = "#000"
+  )
+  
+  ## firebaseUI
+  
   f <- firebase::FirebaseUI$
     new()$ # instantiate
     set_providers( # define providers
@@ -70,7 +85,7 @@ app_server <- function( input, output, session, abcd = abcd()) {
   
   rlist <- callModule(mod_data_crawl_server, "data_crawl_ui_1", f, tkn)
   
- 
+  
   ## Call map module ( Uses output from data crawl module "rlist")
   
   callModule(mod_mymap_server, "mymap_ui_1", rlist[[1]], lat, long, zoomin, zoomout)
@@ -85,20 +100,20 @@ app_server <- function( input, output, session, abcd = abcd()) {
   })
   
   
- observeEvent(input$save_inputs, {
+  observeEvent(input$save_inputs, {
     shinyjs::disable('save_inputs')
     shinyjs::reset("form")
     shinyjs::hide("form")
     shinyjs::show("thankyou_msg")
   })
   
- observeEvent(input$submit_another, {
+  observeEvent(input$submit_another, {
     shinyjs::show("form")
     shinyjs::enable('save_inputs')
     shinyjs::hide("thankyou_msg")
   })
-
- # Saving user specific inputs. g_uid() and tkn() ensures only authenticated users can read/write and only to their own folders.
+  
+  # Saving user specific inputs. g_uid() and tkn() ensures only authenticated users can read/write and only to their own folders.
   inp2 <- observeEvent(input$save_inputs, {
     # Define inputs to save
     inputs_to_save <- c('fever', 'cough', 'breath', 'home', "goout", 'gowork', 'mask', 'lat', 'long')
