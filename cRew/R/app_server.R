@@ -137,6 +137,6 @@ app_server <- function( input, output, session, abcd = abcd()) {
     shinyjs::hide("form")
     shinyjs::show("thankyou_msg")
   })
-  Sys.sleep(1)
+  Sys.sleep(1.8)
   waiter::waiter_hide()
 }
