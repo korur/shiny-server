@@ -20,6 +20,15 @@ app_server <- function( input, output, session, abcd = abcd()) {
     bg_color = "#000"
   )
   
+  
+  ## how to use
+  
+  output$popupContent <- renderPrint(input$text)
+  
+  observeEvent(input$togglePopup, {
+    shinyMobile::f7TogglePopup(id = "popup1")
+  })
+  
   ## firebaseUI
   
   f <- firebase::FirebaseUI$
