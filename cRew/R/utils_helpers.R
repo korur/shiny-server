@@ -22,5 +22,5 @@ databaseURL <- config_file$database$databaseURL
 loader <- tagList(
   waiter::spin_flower(),
   br(),br(),
-  h3("Connecting to cRew...",  style = "color:#1ee6be")
+  h3("Connecting you to the cRew...",  style = "color:#1ee6be")
 )
