@@ -53,7 +53,8 @@ app_ui <- function(request) {
                 effect = "cover",
                 p(h3("Mapping in real-time healthy and symptomatic people. As users enter data about their health status, the app monitors temporal and spatial changes and estimates sudden increases or decreases on local risks. For Experimental use only.", style = "color:#1ee6be")),
                 shinyMobile::f7Link(label = p("by DATAATOMIC", style = "color:#1ee6be"), src = "https://dataatomic.com", external = TRUE),
-                shinyMobile::f7Link(label = p("Global Coronavirus Status",style = "color:#1ee6be"), src = "http://tools.dataatomic.com/shiny/CoronaOutbreak/", external = TRUE)
+                shinyMobile::f7Link(label = p("Global Coronavirus Status",style = "color:#1ee6be"), src = "http://tools.dataatomic.com/shiny/CoronaOutbreak/", external = TRUE),
+                shinyMobile::f7Link(label = p("Code",style = "color:#1ee6be"), src = "https://github.com/korur/cRew", external = TRUE)
               ), # end of panels
             
             shinyMobile::f7Tabs(
