@@ -65,7 +65,11 @@ app_ui <- function(request) {
                 icon = shinyMobile::f7Icon("rocket", old = FALSE),
                 active = TRUE,
                 swipeable = TRUE,
-                shinyMobile::f7Card(shinyMobile::f7Button("togglePopup", "How to use"),shinyMobile::f7Popup(
+                shinyMobile::f7Card(shinyMobile::f7Button("togglePopup", "How to use", color = NULL,
+                                                          fill = TRUE,
+                                                          outline = FALSE,
+                                                          shadow = FALSE,
+                                                          rounded = TRUE), shinyMobile::f7Popup(
                   id = "popup1",
                   title = h2("How to use cRew"),
                   shinyMobile::f7Text("text", h3("Login"), "Get access via gmail or twitter"),
