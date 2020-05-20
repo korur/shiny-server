@@ -27,7 +27,8 @@ app_ui <- function(request) {
      gtag('config', 'UA-148414815-3');
      </script>"
               )),
-            shinyscroll::use_shinyscroll(),
+           
+            
             sever::use_sever(),
             waiter::use_waiter(), # dependencies
             waiter::waiter_show_on_load(loader, color = "#000000"),
@@ -37,9 +38,10 @@ app_ui <- function(request) {
               skin = "auto", 
               theme = "dark"
                          ),#f7init
+            
             shinyMobile::f7TabLayout(
               navbar = shinyMobile::f7Navbar(
-                title = h3("cRew", style = "text-align:left", color="#000000"), 
+                title = h3("cRew", style = "text-align:left", color="#000000"),
                 hairline = TRUE,
                 shadow = TRUE,
                 left_panel = TRUE,
@@ -59,26 +61,30 @@ app_ui <- function(request) {
             
             shinyMobile::f7Tabs(
               animated = TRUE,
-              id = 'tabs',
-            shinyMobile::f7Tab(firebase::useFirebase(), # import dependencies,
+              id = 'tabs', 
+            shinyMobile::f7Tab(h3(uiOutput("loginforfullfeatures"), style="text-align: center;color:#1ee6be"),
+                               firebase::useFirebase(), # import dependencies,
                                firebase::useFirebaseUI(), 
                 tabName = "Home",
-                icon = shinyMobile::f7Icon("rocket", old = FALSE),
+                icon = shinyMobile::f7Icon("rocket"),
                 active = TRUE,
-                swipeable = TRUE,
-                shinyMobile::f7Card(shinyMobile::f7Button("togglePopup", "How to use", color = NULL,
+                swipeable = TRUE, 
+                shinyMobile::f7Card(shinyMobile::f7Button("togglePopup", "How to use",color = NULL,
                                                           fill = TRUE,
                                                           outline = FALSE,
                                                           shadow = FALSE,
-                                                          rounded = TRUE), shinyMobile::f7Popup(
+                                                          rounded = TRUE),shinyMobile::f7Popup(
                   id = "popup1",
                   title = h2("How to use cRew"),
                   shinyMobile::f7Text("text", h3("Login"), "Get access via gmail or twitter"),
                   shinyMobile::f7Text("text", h3("Survey"), "Fill in your data and submit"),
                   shinyMobile::f7Text("text", h3("Maps"), "View your local map and risk analyses"),
                   shinyMobile::f7Text("text", h3("Resubmit"), "Submit again when you use the app"),
-                                      shinyMobile::f7Text("text", h3("History"), "View your past entries on history tab")
-                  )),
+                  shinyMobile::f7Text("text", h3("History"), "View your past entries on history tab")
+                )),
+                
+              
+                
                 shinyMobile::f7Card(tags$script('
   $(document).ready(function () {
     navigator.geolocation.getCurrentPosition(onSuccess, onError);
@@ -107,7 +113,7 @@ app_ui <- function(request) {
 shinyMobile::f7Card(title="Location Information", shinyMobile::f7Col(width = 2,color="blue",
                                           verbatimTextOutput("lat"),
                                           verbatimTextOutput("long"),
-                                          verbatimTextOutput("usercon"),
+                                          textOutput("usercon"),
 )),               
 firebase::reqSignin(shinyMobile::f7Card(shinyMobile::f7Col(width= 2, shinyMobile::f7Button(inputId ='save_inputs', label='Send',  color = NULL,
                                           fill = TRUE,
@@ -129,7 +135,7 @@ shinyjs::hidden(
        ), # f7Tab
 shinyMobile::f7Tab(
   tabName = "My Map",
-  icon = shinyMobile::f7Icon("map", old = FALSE),
+  icon = shinyMobile::f7Icon("map"),
   active = FALSE,
   swipeable = TRUE,
   shinyMobile::f7Card(mod_mymap_ui("mymap_ui_1")
@@ -145,7 +151,7 @@ shinyMobile::f7Tab(
 ), # end of tab
 shinyMobile::f7Tab(
   tabName = "Risk analysis",
-  icon = shinyMobile::f7Icon("waveform", old = FALSE),
+  icon = shinyMobile::f7Icon("waveform"),
   active = FALSE,
   swipeable = TRUE,
   mod_analytics_ui("analytics_ui_1")
@@ -154,7 +160,7 @@ shinyMobile::f7Tab(
 
 shinyMobile::f7Tab(
   tabName = "Info",
-  icon = shinyMobile::f7Icon("info", old = FALSE),
+  icon = shinyMobile::f7Icon("info"),
   active = FALSE,
   swipeable = TRUE,
   shinyMobile::f7ExpandableCard(
@@ -176,9 +182,11 @@ shinyMobile::f7Tab(
   )
   ),shinyMobile::f7Tab(
     tabName = "My history",
-    icon = shinyMobile::f7Icon("book-medical", old = FALSE),
+    icon = shinyMobile::f7Icon("book-medical"),
     active = FALSE,
     swipeable = TRUE, shinyMobile::f7Row(shinyMobile::f7Card(mod_data_crawl_ui("data_crawl_ui_1"))))#tabend
+
+
 
 
              )# f7Tabs
@@ -195,13 +203,11 @@ shinyMobile::f7Tab(
 #' @import shiny
 #' @importFrom golem add_resource_path activate_js favicon bundle_resources
 #' @noRd
-golem_add_external_resources <- function(){
-  
-  add_resource_path(
-    'www', app_sys('app/www')
-  )
- 
-  tags$head(
+ golem_add_external_resources <- function(){
+   addResourcePath(
+     'www', system.file('app/www', package = 'cRew')
+   )
+     tags$head(
     favicon(),
     bundle_resources(
       path = app_sys('app/www'),

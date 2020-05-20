@@ -10,13 +10,16 @@
 mod_analytics_ui <- function(id){
   ns <- NS(id)
   tagList(
+    h3(uiOutput(ns("insufficientdata")), style="text-align: center;color:#1ee6be"),
+    
+
   
     shinyMobile::f7Col(h2("Current Local risk", style="text-align: center;"),
                        shinyMobile::f7Card(
                          echarts4r::echarts4rOutput(ns("risk2"))
                        )#f7Card
-    )#f7col
-    ,
+    ),#f7col
+  
     
     shinyMobile::f7Col(h2("Change in local risk (last 24h)",style="text-align: center;"),
                        shinyMobile::f7Card(
@@ -67,29 +70,44 @@ mod_analytics_server <- function(input, output, session, abcd, lat, long, inp2){
    
    
     if(nrow(abcde) < 1) { 
-      "Waiting for others to upload data around your location"
+      "There is not enough data around your location..."
       } else {  
         abcde <- abcde %>% 
         dplyr::mutate(risk=(2+fever+cough+breath+home+goout+gowork-mask+ ( (fever+cough+breath)*3*(goout+gowork) ))) %>% 
         dplyr::filter(timecon > max(timecon)-604800)
           if(nrow(abcde) <1) {
-            "Waiting for others to upload data around your location"
+            "There is not enough data around your location..."
           } else {
     return(abcde)
           }
       }
     })
   
+ 
+ 
+  output$txt <- renderText({
+     "There is not enough data around your location..."
+  })
+      
+  output$insufficientdata <- renderUI({
+    if(is.character(test()) ){
+      shinyMobile::f7Col(h2("Info", style="text-align: center;"),
+                         shinyMobile::f7Card(textOutput(ns("txt"))))#f7Card
+    } else {
+      NULL
+    }
+  })
+  
+ 
   output$risk <- renderText({
-   
+    
     if( !is.character(test()) ) { 
-   mean(test()$risk)
+      mean(test()$risk)
     } else {
       test()
     }
     
   })
-  
  
   output$risk2 <- echarts4r::renderEcharts4r({
     
@@ -118,7 +136,7 @@ mod_analytics_server <- function(input, output, session, abcd, lat, long, inp2){
 
   output$risk3 <- echarts4r::renderEcharts4r({
    
-    if( is.character(test()) ) { 
+    if(is.character(test()) ) { 
    
     
     liquid <- data.frame(val = c(0,0.4,0.2), color=c("#1ee6be","yellow","red"))
@@ -141,6 +159,7 @@ mod_analytics_server <- function(input, output, session, abcd, lat, long, inp2){
           echarts4r::e_liquid(val, color=color) %>% echarts4r::e_theme("roma")
     }
   }) 
+  outputOptions(output, 'risk', suspendWhenHidden = FALSE)
 }
     
 ## To be copied in the UI
