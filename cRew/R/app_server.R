@@ -68,7 +68,7 @@ app_server <- function( input, output, session, abcd = abcd()) {
   
   output$loginforfullfeatures <- renderUI({
     if(value()<1) {
-      shinyMobile::f7Card( h3(textOutput("txtfull")), shinyMobile::f7Link(label = "Click for details and a demo on YouTube", src = "https://github.com/korur/cRew/", external=TRUE))  #f7Card
+      shinyMobile::f7Card( h3(textOutput("txtfull")), shinyMobile::f7Link(label = "Click for details and a demo on YouTube", src = "https://github.com/korur/cRew/#readme", external=TRUE))  #f7Card
     } else {
       
       shinyMobile::f7Card(textOutput("welcome"))#f7Card
