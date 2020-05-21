@@ -134,11 +134,28 @@ mod_analytics_server <- function(input, output, session, abcd, lat, long, inp2){
     
   })
   
-  
+  abcdg <- reactive({
+    if(is.character(test()))  { 
+      data.frame()
+    } else {
+      abcdg <- test() %>% dplyr::filter(timecon < max(timecon)-86400)
+    }
+    
+  })
+    
+    abcdf <- reactive({ 
+      if(is.character(test())) { 
+        data.frame()
+      } else {
+        abcdf <- test() %>% dplyr::filter(timecon > max(timecon)-86400)
+      }
+    })
+      
+
   output$risk3 <- echarts4r::renderEcharts4r({
 
     
-    if(is.character(test())  { 
+    if(is.character(test()) | nrow(abcdg()) < 1 | nrow(abcdf()) < 1  )  { 
    
     
     liquid <- data.frame(val = c(0,0.4,0.2), color=c("#1ee6be","yellow","red"))
@@ -148,28 +165,15 @@ mod_analytics_server <- function(input, output, session, abcd, lat, long, inp2){
       echarts4r::e_liquid(val, color=color) %>% echarts4r::e_theme("roma")
     
     } else {
-      
-      abcdg <- test() %>% dplyr::filter(timecon < max(timecon)-86400)
-      abcdf <- test() %>% dplyr::filter(timecon > max(timecon)-86400)
-    
-          if( nrow(abcdg) < 1 | nrow(abcdf) < 1 ){ 
-         
-          liquid <- data.frame(val = c(0,0.4,0.2), color=c("#1ee6be","yellow","red"))
-        
-          liquid %>% 
-            echarts4r::e_charts() %>% 
-            echarts4r::e_liquid(val, color=color) %>% echarts4r::e_theme("roma")
-        
-        } else { 
-        
-        riskincrease <- ( 100 * (mean(abcdf$risk)-mean(abcdg$risk)) )/mean(abcdg$risk) 
+
+        riskincrease <- ( 100 * (mean(abcdf()$risk)-mean(abcdg()$risk)) )/mean(abcdg()$risk) 
         liquid <- data.frame(val = c(riskincrease/100,0.4,0.2), color=c("#1ee6be","yellow","red"))
         
         liquid %>% 
           echarts4r::e_charts() %>% 
           echarts4r::e_liquid(val, color=color) %>% echarts4r::e_theme("roma")
         }
-    }
+    
   }) 
   outputOptions(output, 'risk', suspendWhenHidden = FALSE)
 }
