@@ -19,7 +19,7 @@ app_server <- function( input, output, session, abcd = abcd()) {
     ),
     bg_color = "#000"
   )
-
+  
   
   ## how to use
   
@@ -47,7 +47,8 @@ app_server <- function( input, output, session, abcd = abcd()) {
   ## Login for full features
   
   output$txtfull <- renderText({
-    "Login to enable personalized features"
+    
+    "The app uses Google firebase authentication to work. Thus only authenticated users are able to interact with the app."
   })
   output$welcome <- renderText({
     "Welcome to cRew!"
@@ -67,19 +68,19 @@ app_server <- function( input, output, session, abcd = abcd()) {
   
   output$loginforfullfeatures <- renderUI({
     if(value()<1) {
-                         shinyMobile::f7Card(textOutput("txtfull"))#f7Card
+      shinyMobile::f7Card( h3(textOutput("txtfull")), shinyMobile::f7Link(label = "Click for details and a demo on YouTube", src = "https://github.com/korur/cRew/", external=TRUE))  #f7Card
     } else {
-  
-                         shinyMobile::f7Card(textOutput("welcome"))#f7Card
+      
+      shinyMobile::f7Card(textOutput("welcome"))#f7Card
     }
   })
   
   lat <- reactive({
-   if(!is.null(input$lat)){
-     input$lat
-   } else {
-     71.00389
-   }
+    if(!is.null(input$lat)){
+      input$lat
+    } else {
+      71.00389
+    }
   })
   
   long <- reactive({
@@ -113,7 +114,7 @@ app_server <- function( input, output, session, abcd = abcd()) {
     if(f$signed_in$response$providerData[[1]]$providerId == "twitter.com"){ 
       paste0("You are logged in via:","\n", "twitter.com")
     } else {
-    paste0("You are logged in as:","\n", f$signed_in$response$email)
+      paste0("You are logged in as:","\n", f$signed_in$response$email)
     }
   })
   
@@ -122,7 +123,7 @@ app_server <- function( input, output, session, abcd = abcd()) {
     if(f$signed_in$response$providerData[[1]]$providerId == "twitter.com"){ 
       "twitter"
     } else {
-        f$signed_in$response$email }
+      f$signed_in$response$email }
   })
   
   ### Timestamp when user clicks "send" button
@@ -139,7 +140,7 @@ app_server <- function( input, output, session, abcd = abcd()) {
   
   rlist <- callModule(mod_data_crawl_server, "data_crawl_ui_1", f, tkn)
   
- 
+  
   ## Call map module ( Uses output from data crawl module "rlist")
   
   callModule(mod_mymap_server, "mymap_ui_1", rlist[[1]], lat, long, zoomin, zoomout)
@@ -154,20 +155,20 @@ app_server <- function( input, output, session, abcd = abcd()) {
   })
   
   
- observeEvent(input$save_inputs, {
+  observeEvent(input$save_inputs, {
     shinyjs::disable('save_inputs')
     shinyjs::reset("form")
     shinyjs::hide("form")
     shinyjs::show("thankyou_msg")
   })
   
- observeEvent(input$submit_another, {
+  observeEvent(input$submit_another, {
     shinyjs::show("form")
     shinyjs::enable('save_inputs')
     shinyjs::hide("thankyou_msg")
   })
-
- # Saving user specific inputs. g_uid() and tkn() ensures only authenticated users can read/write and only to their own folders.
+  
+  # Saving user specific inputs. g_uid() and tkn() ensures only authenticated users can read/write and only to their own folders.
   inp2 <- observeEvent(input$save_inputs, {
     # Define inputs to save
     inputs_to_save <- c('fever', 'cough', 'breath', 'home', "goout", 'gowork', 'mask')
@@ -193,7 +194,7 @@ app_server <- function( input, output, session, abcd = abcd()) {
     shinyjs::show("thankyou_msg")
   })
   
-
+  
   Sys.sleep(1.8)
   waiter::waiter_hide()
 }
