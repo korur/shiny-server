@@ -125,7 +125,7 @@ server <- function(input, output, session) {
   
   # ML labelling title
   output$main <- renderUI({
-    shinyjs::hide('downl')
+   
     HTML(paste0(tags$h2(tags$strong("Data Labeling for Machine Learning Workflows"), align = "center"), br()))
   })
   
@@ -255,20 +255,18 @@ server <- function(input, output, session) {
     
     observeEvent((input$cat|input$dog), {
       if(len+1-rv$value == 0){
-      shinyjs::disable('cat')
-      shinyjs::disable('dog')
+     
       }
     })
     
     
     observeEvent( (input$save | input$update), {
         saveData(inp())
-      shinyjs::disable('save')
-      shinyjs::show('downl')
+      
     })
     
     observeEvent( (input$cat|input$dog), {
-      shinyjs::enable('save')
+      
     })
     
     readdata <- eventReactive(input$update, {
