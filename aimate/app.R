@@ -16,14 +16,14 @@ library(markdown)
 img_db <- list.files("images")
 len  <- length(img_db)
 maxrv <- length(img_db)
-responsesDir <- file.path("/responses")
+responsesDir <- file.path("responses")
 
 
 # Read or Create mode
 
-if (file.exists('/responses/labels.csv')) {
+if (file.exists('responses/labels.csv')) {
   
-  data <- read.csv("/responses/labels.csv")
+  data <- read.csv('responses/labels.csv')
   
 } else {
   
