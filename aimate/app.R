@@ -13,17 +13,17 @@ library(markdown)
 # Data
 # Connect to Image database
 
-img_db <- list.files("/srv/shiny-server/aimate/images")
+img_db <- list.files("images")
 len  <- length(img_db)
 maxrv <- length(img_db)
-responsesDir <- file.path("/srv/shiny-server/aimate/responses")
+responsesDir <- file.path("responses")
 
 
 # Read or Create mode
 
-if (file.exists('/srv/shiny-server/aimate/responses/labels.csv')) {
+if (file.exists('responses/labels.csv')) {
   
-  data <- read.csv('/srv/shiny-server/aimate/responses/labels.csv')
+  data <- read.csv('responses/labels.csv')
   
 } else {
   
@@ -45,7 +45,7 @@ if(anyNA(data$label)){
 
 
 mycolors=c("#1ee6be","#040000","gray")
-# Functions``
+# Functions
 
 saveData <- function(x) {
   if(length(x) < 1) {
@@ -126,7 +126,7 @@ ui <- navbarPage(
 server <- function(input, output, session) {
   
   readdata <- eventReactive(input$update, {
-    read.csv('/srv/shiny-server/aimate/responses/labels.csv', stringsAsFactors = TRUE)
+    read.csv('responses/labels.csv', stringsAsFactors = TRUE)
   },ignoreNULL = FALSE)
   
  
@@ -140,9 +140,9 @@ server <- function(input, output, session) {
   
   # reactiveValues
   rv <- reactiveValues()
-  rv$value <- start()
+  rv$value <- start
   rv$inp <- list()
-  rv$stop <- start()
+  rv$stop <- start
   
   
   observeEvent(input$cat,{
