@@ -13,17 +13,17 @@ library(markdown)
 # Data
 # Connect to Image database
 
-img_db <- list.files("images")
+img_db <- list.files("/srv/shiny-server/aimate/images")
 len  <- length(img_db)
 maxrv <- length(img_db)
-responsesDir <- file.path("responses")
+responsesDir <- file.path("/srv/shiny-server/aimate/responses")
 
 
 # Read or Create mode
 
-if (file.exists('responses/labels.csv')) {
+if (file.exists('/srv/shiny-server/aimate/responses/labels.csv')) {
   
-  data <- read.csv('responses/labels.csv')
+  data <- read.csv('/srv/shiny-server/aimate/responses/labels.csv')
   
 } else {
   
@@ -272,7 +272,7 @@ server <- function(input, output, session) {
   })
   
   readdata <- eventReactive(input$update, {
-    read.csv("responses/labels.csv", stringsAsFactors = TRUE)
+    read.csv('/srv/shiny-server/aimate/responses/labels.csv', stringsAsFactors = TRUE)
   },ignoreNULL = FALSE)
   
   output$count <- renderPlot({
