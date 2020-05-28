@@ -48,7 +48,7 @@ app_server <- function( input, output, session, abcd = abcd()) {
   
   output$txtfull <- renderText({
     
-    "The app uses Google firebase authentication to work. Thus only authenticated users are able to interact with the app."
+    "The app uses Google firebase authentication to work. Thus, only authenticated users are able to interact with the app."
   })
   output$welcome <- renderText({
     "Welcome to cRew!"
