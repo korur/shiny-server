@@ -35,12 +35,7 @@ if (file.exists('/srv/shiny-server/aimate/responses/labels.csv')) {
 }
 
 
-# Preset values
-if(anyNA(data$label)){
-  start <- min(which(is.na(data$label)))
-} else {
-  start <- len+1
-}
+
 
 mycolors=c("#1ee6be","#040000","gray")
 # Functions``
@@ -122,6 +117,13 @@ ui <- navbarPage(
 # Server 
 
 server <- function(input, output, session) {
+  
+  # Preset values
+  if(anyNA(data$label)){
+    start <- min(which(is.na(data$label)))
+  } else {
+    start <- len+1
+  }
   
   # ML labelling title
   output$main <- renderUI({
