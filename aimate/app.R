@@ -36,6 +36,13 @@ if (file.exists('/srv/shiny-server/aimate/responses/labels.csv')) {
 
 
 
+# Preset values
+if(anyNA(data$label)){
+  start <- min(which(is.na(data$label)))
+} else {
+  start <- len+1
+}
+
 
 mycolors=c("#1ee6be","#040000","gray")
 # Functions``
@@ -122,16 +129,7 @@ server <- function(input, output, session) {
     read.csv('/srv/shiny-server/aimate/responses/labels.csv', stringsAsFactors = TRUE)
   },ignoreNULL = FALSE)
   
-  # Preset values
-  start <- reactive({
-    
-    if(anyNA(readdata()$label)){
-      start <- min(which(is.na(readdata()$label)))
-    } else {
-      start <- len+1
-    }
-    
-  })
+ 
  
   
   # ML labelling title
