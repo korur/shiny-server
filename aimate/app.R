@@ -118,12 +118,21 @@ ui <- navbarPage(
 
 server <- function(input, output, session) {
   
+  readdata <- eventReactive(input$update, {
+    read.csv('/srv/shiny-server/aimate/responses/labels.csv', stringsAsFactors = TRUE)
+  },ignoreNULL = FALSE)
+  
   # Preset values
-  if(anyNA(data$label)){
-    start <- min(which(is.na(data$label)))
-  } else {
-    start <- len+1
-  }
+  start <- reactive({
+    
+    if(anyNA(readdata()$label)){
+      start <- min(which(is.na(readdata()$label)))
+    } else {
+      start <- len+1
+    }
+    
+  })
+ 
   
   # ML labelling title
   output$main <- renderUI({
@@ -133,9 +142,9 @@ server <- function(input, output, session) {
   
   # reactiveValues
   rv <- reactiveValues()
-  rv$value <- start
+  rv$value <- start()
   rv$inp <- list()
-  rv$stop <- start
+  rv$stop <- start()
   
   
   observeEvent(input$cat,{
@@ -273,9 +282,7 @@ server <- function(input, output, session) {
     shinyjs::enable('save')
   })
   
-  readdata <- eventReactive(input$update, {
-    read.csv('/srv/shiny-server/aimate/responses/labels.csv', stringsAsFactors = TRUE)
-  },ignoreNULL = FALSE)
+  
   
   output$count <- renderPlot({
     if(is.null(levels(readdata()$label))) {
