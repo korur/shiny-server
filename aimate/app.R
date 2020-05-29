@@ -13,17 +13,17 @@ library(markdown)
 # Data
 # Connect to Image database
 
-img_db <- list.files("images")
+img_db <- list.files("/srv/shiny-server/aimate/images")
 len  <- length(img_db)
 maxrv <- length(img_db)
-responsesDir <- file.path("responses")
+responsesDir <- file.path("/srv/shiny-server/aimate/responses")
 
 
 # Read or Create mode
 
-if (file.exists('responses/labels.csv')) {
+if (file.exists('/srv/shiny-server/aimate/responses/labels.csv')) {
   
-  data <- read.csv('responses/labels.csv')
+  data <- read.csv('/srv/shiny-server/aimate/responses/labels.csv')
   
 } else {
   
@@ -35,28 +35,29 @@ if (file.exists('responses/labels.csv')) {
 }
 
 
-
 # Preset values
-if(anyNA(data$label)){
-  start <- min(which(is.na(data$label)))
+
+if(anyNA(data$label)){ # checks whether there is any unlabelled data
+  start <- min(which(is.na(data$label))) # finds the location of the first unlabeled data
 } else {
-  start <- len+1
+  start <- len+1 # if all data is labelled
 }
 
 
 mycolors=c("#1ee6be","#040000","gray")
+
 # Functions
 
 saveData <- function(x) {
-  if(length(x) < 1) {
+  if(length(x) < 1) { # if no data is labeled  do nothing
     
-  }else if(start != len+1){
+  }else if(start != len+1){ # if there is any unlabeled data in the original data & some are labelled now execute save
     rv <- unlist(x)
     data$label[start:(start+length(rv)-1)] <- rv
     write.csv(x = data, file = file.path(responsesDir, "labels.csv"),
               row.names = FALSE, quote = TRUE)
-  } else {
-    
+  } else { # if there is no unlabeled data in the original, do not execute save
+    # show modal can come here? to be tested
   }
 }
 
@@ -126,11 +127,10 @@ ui <- navbarPage(
 server <- function(input, output, session) {
   
   readdata <- eventReactive(input$update, {
-    read.csv('responses/labels.csv', stringsAsFactors = TRUE)
+    read.csv('/srv/shiny-server/aimate/responses/labels.csv', stringsAsFactors = TRUE)
   },ignoreNULL = FALSE)
   
- 
- 
+
   
   # ML labelling title
   output$main <- renderUI({
