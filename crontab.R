@@ -33,10 +33,10 @@ pivot <- function(df){
     df, 
     tidyselect::contains("/"),
     names_to = c("date"),
-    values_to = c("cases"),
-    values_ptypes = list(cases = "character")
+    values_to = c("cases")
   )
 }
+
 
 #' Convert
 #' 
