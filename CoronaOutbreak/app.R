@@ -46,8 +46,8 @@ library(pool)
 library(golem)
 library(RSQLite)
 
-con <- dbConnect(SQLite(), "/srv/shiny-server/covid.db")
-
+#con <- dbConnect(SQLite(), "/srv/shiny-server/covid.db")
+con <- dbConnect(SQLite(), "covid.db")
 # con <- pool::dbPool(
 
 #RPostgres::Postgres(),
@@ -306,8 +306,8 @@ server <- function(input, output, session) {
                        df <- DBI::dbReadTable(con, "jhu")
                      })
   diff <- reactive({
-    log <- DBI::dbGetQuery(con, "SELECT MAX(last_updated) FROM log;")
-    diff <- difftime(Sys.time(), log$max, units = "min") %>% as.integer()
+    log <- DBI::dbGetQuery(con, "SELECT MAX(last_updated) as max FROM log;")
+    diff <- difftime(as.POSIXct(Sys.time(), origin="1970-01-01"), as.POSIXct(log$max, origin="1970-01-01"), units = "min") %>% as.integer()
   })
   dflight <- reactive({
     dflight <- df() %>% filter(date==max(date))   
