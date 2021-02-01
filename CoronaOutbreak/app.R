@@ -24,6 +24,9 @@ share <- list(
 )
 
 
+con <- dbConnect(SQLite(), "covid.db")
+print(con)
+
 ###################################
 ###################################
 ###################################
@@ -47,8 +50,8 @@ library(golem)
 library(RSQLite)
 
 
-con <- dbConnect(SQLite(), "/srv/shiny-server/covid.db")
-print(con)
+#con <- dbConnect(SQLite(), "/srv/shiny-server/covid.db")
+
 
 
 
@@ -137,7 +140,6 @@ sidebar <- dashboardSidebar(
     )
   )
 )
-
 
 ###################################
 #######                     #######
@@ -278,7 +280,7 @@ ui <- dashboardPage( header, sidebar, body, skin= "blue")
 
 # create the server functions for the dashboard  
 server <- function(input, output, session) { 
-  
+
   sever::sever(
     tagList(
       h1("Whoops!"),
@@ -299,13 +301,14 @@ server <- function(input, output, session) {
                      valueFunc = function() {
                        df <- DBI::dbReadTable(con, "jhu")
                      })
+  
   diff <- reactive({
     log <- DBI::dbGetQuery(con, "SELECT MAX(last_updated) as max FROM log;")
-    diff <- difftime(as.POSIXct(Sys.time(), origin="1970-01-01"), as.POSIXct(log$max, origin="1970-01-01"), units = "min")
-    dbDisconnect(con)
+    diff <- difftime(as.POSIXct(Sys.time(), origin="1970-01-01"), as.POSIXct(log$max, origin="1970-01-01"), units = "min") %>% as.integer()
+  
   })
   dflight <- reactive({
-    dflight <- df() %>% filter(date==max(date))   
+    dflight <- df() %>% dplyr::filter(date==max(date))   
   })
   
 
@@ -317,14 +320,14 @@ server <- function(input, output, session) {
   
   #creating the valueBoxOutput content
   output$numcases <- renderValueBox({
-    valueBox( value = tags$p( countup(dflight() %>% filter(type=="confirmed") %>% select(cases) %>% sum()), style = "font-size: 70%;"),
+    valueBox( value = tags$p( countup(dflight() %>% dplyr::filter(type=="confirmed") %>% select(cases) %>% sum()), style = "font-size: 70%;"),
               subtitle = tags$p("Total Cases", style = "font-size: 100%;") 
               ,icon = icon("procedures")
               ,color = "red")  
   })
   output$numchina <- renderValueBox({
     valueBox(
-      value = tags$p(countup(dflight() %>% filter(country == "China" & type=="confirmed") %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
+      value = tags$p(countup(dflight() %>% dplyr::filter(country == "China" & type=="confirmed") %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
       subtitle = tags$p("China", style = "font-size: 100%;")
       ,icon = icon('procedures')
       ,color = "red")  
@@ -332,7 +335,7 @@ server <- function(input, output, session) {
   output$numeu <- renderValueBox({
     
     valueBox(
-      value = tags$p( countup(dflight() %>% filter(country %in% EU & type=="confirmed") %>% summarise(n=sum(cases)) %>% pull ), style = "font-size: 70%;"),
+      value = tags$p( countup(dflight() %>% dplyr::filter(country %in% EU & type=="confirmed") %>% summarise(n=sum(cases)) %>% pull ), style = "font-size: 70%;"),
       subtitle = tags$p("Europe", style = "font-size: 100%;")
       
       ,icon = icon("procedures")
@@ -341,7 +344,7 @@ server <- function(input, output, session) {
   
   output$numus <- renderValueBox({
     valueBox( 
-      value = tags$p( countup(dflight() %>% filter(country == "US" & type=="confirmed") %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
+      value = tags$p( countup(dflight() %>% dplyr::filter(country == "US" & type=="confirmed") %>% summarise(n=sum(cases)) %>% pull), style = "font-size: 70%;"),
       subtitle = tags$p("USA", style = "font-size: 100%;")
       , "USA"
       ,icon = icon("procedures")
@@ -356,13 +359,13 @@ server <- function(input, output, session) {
     
   })
   output$death <- renderValueBox({
-    valueBox(value = tags$p(countup(dflight() %>% filter(type=="death") %>% select(cases) %>% sum()), style = "font-size: 70%;"),
+    valueBox(value = tags$p(countup(dflight() %>% dplyr::filter(type=="death") %>% select(cases) %>% sum()), style = "font-size: 70%;"),
              subtitle = tags$p("Total Deaths", style = "font-size: 100%;")
              ,icon = icon("cross")
              ,color = "red")  
   })
   output$rate <- renderValueBox({
-    valueBox( value = tags$p( round((dflight() %>% filter(type=="death") %>% select(cases) %>% sum())/(df() %>% filter(type =="confirmed" & date==max(date)) %>% select(cases) %>% sum()) *100,1), style = "font-size: 70%;"),
+    valueBox( value = tags$p( round((dflight() %>% dplyr::filter(type=="death") %>% select(cases) %>% sum())/(df() %>% dplyr::filter(type =="confirmed" & date==max(date)) %>% select(cases) %>% sum()) *100,1), style = "font-size: 70%;"),
               subtitle = tags$p("Death rate", style = "font-size: 100%;")
               ,icon = icon('percent')
               ,color = "red")  
@@ -384,7 +387,7 @@ server <- function(input, output, session) {
   
   output$countries <- renderDataTable({
     # Plot
-    df_sum <- dflight() %>% filter(country != "China", type == "confirmed") %>% 
+    df_sum <- dflight() %>% dplyr::filter(country != "China", type == "confirmed") %>% 
       group_by(country) %>% 
       summarise(cases=sum(cases)) %>% 
       arrange(-cases)%>% 
@@ -395,7 +398,7 @@ server <- function(input, output, session) {
   
   output$map <- renderLeaflet({
     
-    dfmap <- dflight() %>% filter(type=="confirmed") 
+    dfmap <- dflight() %>% dplyr::filter(type=="confirmed") 
     dfmap$radius <- as.numeric(cut(dfmap$cases, breaks =c(-Inf,4,16,64,128,256,512,1024,2048,4096,8192,16384,32768,Inf)))
     # labels = c("<4", "4-16", "16-64", "64-128","128-256","256-512","512-1024","1024-2048","2048-4096", "> 4096" )
     m <- leaflet(dfmap) %>%
@@ -423,7 +426,7 @@ server <- function(input, output, session) {
     
     # Plot
     
-    summary <- df() %>% filter(type =="confirmed") %>%  group_by(date) %>% summarise(n=sum(cases))
+    summary <- df() %>% dplyr::filter(type =="confirmed") %>%  group_by(date) %>% summarise(n=sum(cases))
     summary %>% ggplot(aes(x=date, y=n)) +
       geom_smooth(method = "loess",color='red', size =2) +
       geom_point(size=8, color='red')+theme_minimal() +
@@ -436,7 +439,7 @@ server <- function(input, output, session) {
   }) 
   
   dt <- reactive({
-    dt <- df() %>% filter(type=="confirmed") %>% spread(date, cases)
+    dt <- df() %>% dplyr::filter(type=="confirmed") %>% spread(date, cases)
   })
   output$df_wide <- renderDataTable({
     datatable(dt(), options = list(paging = TRUE), height='400px') 
