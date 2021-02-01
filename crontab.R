@@ -1,6 +1,7 @@
 # libraries needed
 
 library(tidyverse)
+library(RSQLite)
 
 # Functions needed
 
