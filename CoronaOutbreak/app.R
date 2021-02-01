@@ -301,7 +301,7 @@ server <- function(input, output, session) {
                      })
   diff <- reactive({
     log <- DBI::dbGetQuery(con, "SELECT MAX(last_updated) as max FROM log;")
-    diff <- difftime(as.POSIXct(Sys.time(), origin="1970-01-01"), as.POSIXct(log$max, origin="1970-01-01"), units = "min") %>% as.integer()
+    diff <- difftime(as.POSIXct(Sys.time(), origin="1970-01-01"), as.POSIXct(log$max, origin="1970-01-01"), units = "min")
     dbDisconnect(con)
   })
   dflight <- reactive({
