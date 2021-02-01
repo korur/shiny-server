@@ -90,4 +90,4 @@ con <- dbConnect(SQLite(), "covid.db")
 log <- tibble::tibble(last_updated = Sys.time())
 DBI::dbWriteTable(con, "jhu", df, overwrite =TRUE, append = FALSE)
 DBI::dbWriteTable(con, "log", log, append = TRUE)
-
+dbDisconnect(con)

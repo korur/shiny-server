@@ -48,6 +48,7 @@ library(RSQLite)
 
 #con <- dbConnect(SQLite(), "/srv/shiny-server/covid.db")
 con <- dbConnect(SQLite(), "covid.db")
+print(con)
 # con <- pool::dbPool(
 
 #RPostgres::Postgres(),
@@ -308,6 +309,7 @@ server <- function(input, output, session) {
   diff <- reactive({
     log <- DBI::dbGetQuery(con, "SELECT MAX(last_updated) as max FROM log;")
     diff <- difftime(as.POSIXct(Sys.time(), origin="1970-01-01"), as.POSIXct(log$max, origin="1970-01-01"), units = "min") %>% as.integer()
+    dbDisconnect(con)
   })
   dflight <- reactive({
     dflight <- df() %>% filter(date==max(date))   
