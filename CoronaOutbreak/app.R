@@ -24,8 +24,6 @@ share <- list(
 )
 
 
-con <- dbConnect(SQLite(), "covid.db")
-print(con)
 
 ###################################
 ###################################
@@ -50,7 +48,7 @@ library(golem)
 library(RSQLite)
 
 
-#con <- dbConnect(SQLite(), "/srv/shiny-server/covid.db")
+con <- dbConnect(SQLite(), "/srv/shiny-server/covid.db")
 
 
 
