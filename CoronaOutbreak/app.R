@@ -2,27 +2,31 @@
 # Connect
 # config <- yaml::read_yaml("/etc/skconfig")   # for digitalocean ubuntu 
 
+# Not needed anymore We are using sqlite!!!
+
+
 # Connection script local or server
-if (file.exists("~/workingdirectory/CoronaOutbreak/_coronavirus.yml")) { 
-config <- yaml::read_yaml("~/workingdirectory/CoronaOutbreak/_coronavirus.yml") 
-} else { 
-config <- yaml::read_yaml("/etc/skconfig") 
-} 
+#if (file.exists("D:/dwdir/CoronaOutbreak/_coronavirus.yml")) { 
+#config <- yaml::read_yaml("D:/dwdir/CoronaOutbreak/_coronavirus.yml") 
+#} else { 
+#config <- yaml::read_yaml("/etc/skconfig") 
+#} 
 
+con <- dbConnect(SQLite(), "/srv/shiny-server/covid.db")
 
-con <- pool::dbPool(
+# con <- pool::dbPool(
   
-  RPostgres::Postgres(),
-  host = config$database$host,
-  user = config$database$user,
-  password = config$database$password,
-  dbname = config$database$name,
-  port = 25060) 
+  #RPostgres::Postgres(),
+  #host = config$database$host,
+  #user = config$database$user,
+  #password = config$database$password,
+  #dbname = config$database$name,
+  #port = 25060) 
 
 
 share <- list(
   title = "Coronavirus Tracker",
-  url = "http://tools.dataatomic.com/shiny/CoronaOutbreak_test/",
+  url = "http://tools.dataatomic.com/shiny/CoronaOutbreak/",
   image = "http://tools.dataatomic.com/shiny/img/virus.png/",
   description = "Track global Coronavirus cases",
   twitter_user = "dataatomic"

@@ -84,9 +84,20 @@ suppressWarnings({
 })
 df$state <- ifelse(is.na(df$state), df$country,df$state)
 
-# Connect to SQLite and save the data
-con <- dbConnect(SQLite(), "covid.db")
+# Connect to database
+
+config <- yaml::read_yaml("/etc/skconfig")
+
+con <- pool::dbPool(
+  RPostgres::Postgres(),
+  host = config$database$host,
+  user = config$database$user,
+  password = config$database$password,
+  dbname = config$database$name,
+  port = 25060)
+
+# Save to database
+
 log <- tibble::tibble(last_updated = Sys.time())
 DBI::dbWriteTable(con, "jhu", df, overwrite =TRUE, append = FALSE)
 DBI::dbWriteTable(con, "log", log, append = TRUE)
-
