@@ -12,16 +12,7 @@
 #config <- yaml::read_yaml("/etc/skconfig") 
 #} 
 
-con <- dbConnect(SQLite(), "/srv/shiny-server/covid.db")
 
-# con <- pool::dbPool(
-  
-  #RPostgres::Postgres(),
-  #host = config$database$host,
-  #user = config$database$user,
-  #password = config$database$password,
-  #dbname = config$database$name,
-  #port = 25060) 
 
 
 share <- list(
@@ -53,8 +44,18 @@ library(waiter)
 library(DBI)
 library(pool)
 library(golem)
+library(RSQLite)
 
+con <- dbConnect(SQLite(), "/srv/shiny-server/covid.db")
 
+# con <- pool::dbPool(
+
+#RPostgres::Postgres(),
+#host = config$database$host,
+#user = config$database$user,
+#password = config$database$password,
+#dbname = config$database$name,
+#port = 25060) 
 
 
 ASIA <- c("Hong Kong","Japan", "Macau", "China", "Singapore ", "South Korea", "Taiwan", "Thailand", "Vietnam", "United Arab Emirates", "Cambodia", "Sri Lanka","India", "Nepal", "Russia",
