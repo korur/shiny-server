@@ -1,4 +1,4 @@
-# libraries needed
+#libraries needed
 
 library(tidyverse)
 library(RSQLite)
@@ -85,9 +85,10 @@ suppressWarnings({
 })
 df$state <- ifelse(is.na(df$state), df$country,df$state)
 
+
 # Connect to SQLite and save the data
-con <- dbConnect(SQLite(), "covid.db")
+con <- dbConnect(SQLite(), "/srv/shiny-server/CoronaOutbreak/covid.db")
 log <- tibble::tibble(last_updated = Sys.time())
 DBI::dbWriteTable(con, "jhu", df, overwrite =TRUE, append = FALSE)
 DBI::dbWriteTable(con, "log", log, append = TRUE)
-dbDisconnect(con)
+DBI::dbDisconnect(con)

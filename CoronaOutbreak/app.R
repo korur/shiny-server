@@ -48,7 +48,7 @@ library(golem)
 library(RSQLite)
 
 
-con <- dbConnect(SQLite(), "/srv/shiny-server/covid.db")
+con <- dbConnect(SQLite(), "/srv/shiny-server/CoronaOutbreak/covid.db")
 
 
 
