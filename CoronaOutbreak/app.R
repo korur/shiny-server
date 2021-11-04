@@ -47,8 +47,20 @@ library(pool)
 library(golem)
 library(RSQLite)
 
+# for local
 
-con <- dbConnect(SQLite(), "/srv/shiny-server/CoronaOutbreak/covid.db")
+local_dir <- "D:/dwdir/shiny-server/CoronaOutbreak"
+
+if (getwd() == local_dir) {
+  con <- dbConnect(SQLite(), "covid.db")
+} else {
+  con <- dbConnect(SQLite(), "/srv/shiny-server/CoronaOutbreak/covid.db")
+}
+
+
+
+# for server
+# con <- dbConnect(SQLite(), "/srv/shiny-server/CoronaOutbreak/covid.db")
 
 
 
@@ -397,14 +409,14 @@ server <- function(input, output, session) {
   output$map <- renderLeaflet({
     
     dfmap <- dflight() %>% dplyr::filter(type=="confirmed") 
-    dfmap$radius <- as.numeric(cut(dfmap$cases, breaks =c(-Inf,4,16,64,128,256,512,1024,2048,4096,8192,16384,32768,Inf)))
+    dfmap$radius <- as.numeric(cut(dfmap$cases, breaks = 1000 * c(-Inf,4,16,64,128,256,512,1024,2048,4096,8192,16384,32768,Inf)))
     # labels = c("<4", "4-16", "16-64", "64-128","128-256","256-512","512-1024","1024-2048","2048-4096", "> 4096" )
     m <- leaflet(dfmap) %>%
       addTiles(
         urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
         attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>% 
       addProviderTiles(providers$Stamen.TonerLite) %>% 
-      addCircleMarkers(lng=dfmap$lon, lat=dfmap$lat, radius = 3* dfmap$radius, color = "red") %>% 
+      addCircleMarkers(lng=dfmap$lon, lat=dfmap$lat, radius = 3* dfmap$radius, color = "#dc3047") %>% 
       addMarkers(dfmap$lon, dfmap$lat,  popup =   paste("<h4>","<b>", dfmap$state, "</b>", "<br>", dfmap$cases, "case/s","</h4>")) %>% 
       setView(lng = 15, lat = 47, zoom = 4)
   })
@@ -425,9 +437,9 @@ server <- function(input, output, session) {
     # Plot
     
     summary <- df() %>% dplyr::filter(type =="confirmed") %>%  group_by(date) %>% summarise(n=sum(cases))
-    summary %>% ggplot(aes(x=date, y=n)) +
-      geom_smooth(method = "loess",color='red', size =2) +
-      geom_point(size=8, color='red')+theme_minimal() +
+    summary %>% ggplot(aes(x=as.Date(date, origin = "1970-01-01"), y=n)) +
+      geom_smooth(method = "loess",color='blue', size =1) +
+      geom_point(size=1, color='#dc3047')+theme_minimal() +
       theme(legend.position = "none", axis.title.x = element_blank(), text = element_text(size=20), plot.title = element_text( hjust=0.5, vjust = -1)) + 
       labs(
         caption= "www.dataatomic.com",
