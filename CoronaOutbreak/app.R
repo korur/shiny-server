@@ -438,7 +438,7 @@ server <- function(input, output, session) {
     # Plot
     
     summary <- df() %>% dplyr::filter(type =="confirmed") %>%  group_by(date) %>% summarise(n=sum(cases))
-    summary %>% ggplot(aes(x=date, y=n)) +
+    summary %>% ggplot(aes(x=as.Date(date, origin="1970-01-01"), y=n)) +
       geom_smooth(method = "loess",color='blue', size =1) +
       geom_point(size=1, color='#dc3047')+theme_minimal() +
       theme(legend.position = "none", axis.title.x = element_blank(), text = element_text(size=20), plot.title = element_text( hjust=0.5, vjust = -1)) + 
