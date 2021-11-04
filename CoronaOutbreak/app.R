@@ -310,6 +310,7 @@ server <- function(input, output, session) {
                        log <- DBI::dbGetQuery(con, "SELECT MAX(last_updated) FROM log;")},
                      valueFunc = function() {
                        df <- DBI::dbReadTable(con, "jhu")
+                       
                      })
   
   diff <- reactive({
@@ -437,7 +438,7 @@ server <- function(input, output, session) {
     # Plot
     
     summary <- df() %>% dplyr::filter(type =="confirmed") %>%  group_by(date) %>% summarise(n=sum(cases))
-    summary %>% ggplot(aes(x=as.Date(date, origin = "1970-01-01"), y=n)) +
+    summary %>% ggplot(aes(x=date, y=n)) +
       geom_smooth(method = "loess",color='blue', size =1) +
       geom_point(size=1, color='#dc3047')+theme_minimal() +
       theme(legend.position = "none", axis.title.x = element_blank(), text = element_text(size=20), plot.title = element_text( hjust=0.5, vjust = -1)) + 
@@ -449,7 +450,9 @@ server <- function(input, output, session) {
   }) 
   
   dt <- reactive({
-    dt <- df() %>% dplyr::filter(type=="confirmed") %>% spread(date, cases)
+    dfx <- df()
+    dfx$date <- as.Date(dfx$date, origin="1970-01-01")
+    dt <- dfx %>% dplyr::filter(type=="confirmed" & date > '2020-12-31') %>% spread(date, cases)
   })
   output$df_wide <- renderDataTable({
     datatable(dt(), options = list(paging = TRUE), height='400px') 
