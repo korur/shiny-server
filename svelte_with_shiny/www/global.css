@@ -1,0 +1,13 @@
+:root {
+  --brand_primary: #252525;
+  --brand_secondary: #042626;
+  --brand_background: #1b1b1b;
+  --brand_heading: #dddddd;
+  --brand_text: gray;
+  --brand_navbar_text: #ffffff;
+  --brand_bars: rgb(82, 246, 103);
+}
+body {
+  background: var(--brand_secondary);
+  margin: 0 auto;
+}
